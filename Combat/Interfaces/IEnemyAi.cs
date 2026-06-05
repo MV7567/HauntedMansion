@@ -1,6 +1,13 @@
-﻿namespace HauntedMansion.Combat.Interfaces;
+﻿using HauntedMansion.Entities;
 
-public interface IEnemyAi
+namespace HauntedMansion.Combat.Interfaces
 {
-    
+    /// <summary>
+    /// For enemy decision making
+    /// swapping enemy logic without changing the enemy class
+    /// </summary>
+    public interface IEnemyAi
+    {
+        IAction ChooseAction(Enemy enemy, CombatContext context);
+    }
 }

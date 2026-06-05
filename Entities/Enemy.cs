@@ -29,18 +29,18 @@ public abstract class Enemy : Entity
 
     public void SetState(ICombatState state)
     {
-        // future: finish combat states
-        //CurrentState?.OnExit(this);
+        //future: finish combat states
+        CurrentState?.OnExit(this);
         CurrentState = state;
-        //CurrentState?.OnEnter(this);
+        CurrentState?.OnEnter(this);
     }
 
     public IAction GetAction(CombatContext context)
     {
         // future: add IAction interface
-        //IAction stateAction = CurrentState?.Execute(this, context);
-        //if (stateAction != null) return stateAction;
-        //return AI?.ChooseAction(this, context);
+        IAction stateAction = CurrentState?.Execute(this, context);
+        if (stateAction != null) return stateAction;
+        return AI?.ChooseAction(this, context);
     }
 
     public override CharacterStats GetEffectiveStats()

@@ -1,5 +1,6 @@
 ﻿using HauntedMansion.Core;
 using HauntedMansion.Inventory.Items;
+using HauntedMansion.Inventory;
 
 namespace HauntedMansion.Entities
 {
@@ -11,12 +12,15 @@ namespace HauntedMansion.Entities
         public int Experience { get; private set; }
         public int Money { get; private set; }
         
-        // to be added
-        //public Inventory PlayerInventory { get; private set; }
-        //public EquipmentSlots Equipment { get; private set; }
+        public Inventory.Inventory PlayerInventory { get; init; }
+        public EquipmentSlots Equipment { get; init; }
 
         // money and experience start as 0
-        public Player(string name, CharacterStats baseStats) : base(name, baseStats) {}
+        public Player(string name, CharacterStats baseStats) : base(name, baseStats)
+        {
+            PlayerInventory = new Inventory.Inventory();
+            Equipment = new EquipmentSlots();
+        }
 
         public void GainExperience(int amount)
         {
@@ -28,10 +32,21 @@ namespace HauntedMansion.Entities
             if (Money < 0) Money = 0; // no negative money
         }
         
+        /// <summary>
+        /// Base stats + equipment modifiers
+        /// Called by combat engine instead of stats directly
+        /// </summary>
         public override CharacterStats GetEffectiveStats()
         {
-            // future: combine base stats with modifiers from equipment!!!!!!!!
-            return Stats;
+            var mods = Equipment.GetTotalModifiers();
+            return new CharacterStats(
+                Stats.Attack + mods.AttackBonus,
+                Stats.Defence + mods.DefenceBonus,
+                Stats.Magic + mods.MagicBonus,
+                Stats.Speed + mods.SpeedBonus,
+                Stats.Accuracy + mods.AccuracyBonus,
+                Stats.MaxHP
+            );
         }
     }
 }

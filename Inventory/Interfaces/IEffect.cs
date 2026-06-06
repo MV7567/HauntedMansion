@@ -1,6 +1,12 @@
-﻿namespace HauntedMansion.Inventory.Interfaces;
+﻿using HauntedMansion.Entities;
 
-public interface IEffect
+namespace HauntedMansion.Inventory.Interfaces
 {
-    
+    /// <summary>
+    /// Effects caused by consumable
+    /// </summary>
+    public interface IEffect
+    {
+        void Apply(Entity target);
+    }
 }

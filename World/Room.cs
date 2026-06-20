@@ -72,14 +72,14 @@ namespace HauntedMansion.World
         /// rolls against undefeated NormalEnemy encounter weights
         /// returns true if triggered an encounter
         /// </summary>
-        public bool TryTriggerEncounter(Player player)
+        public NormalEnemy TryTriggerEncounter(Player player)
         {
             var activeEnemies = _normalEnemies.Where(e => !e.IsDefeated).ToList();
-            if (activeEnemies.Count == 0) return false;
+            if (activeEnemies.Count == 0) return null;
             
             // base 30% chance of encounter per step
             float baseChance = 0.3f;
-            if (_rng.NextDouble() > baseChance) return false;
+            if (_rng.NextDouble() > baseChance) return null;
             
             // Weight-based selection from active enemies
             float totalWeight = activeEnemies.Sum(e => e.EncounterWeight);
@@ -90,12 +90,9 @@ namespace HauntedMansion.World
             {
                 cumulative += enemy.EncounterWeight;
                 if (roll <= cumulative)
-                {
-                    Console.WriteLine($"\nA {enemy.Name} appears!");
-                }
+                    return enemy;
             }
-
-            return false;
+            return null;
         }
         
         /// <summary>

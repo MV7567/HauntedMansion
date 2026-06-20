@@ -1,0 +1,24 @@
+{
+  "ghost_child": {
+    "lines": [
+      "Have you seen my toy?",
+      "Get out of my room!",
+      "...you found it. Thank you."
+    ],
+    "lineMap": {
+      "ghost_child_greet": "Have you seen my toy?",
+      "ghost_child_angry": "Get out of my room!",
+      "ghost_child_appeased": "...you found it. Thank you."
+    }
+  },
+  "rat_chef": {
+    "lines": [
+      "MY kitchen! Get out!",
+      "...you think my cooking smells good?"
+    ],
+    "lineMap": {
+      "rat_chef_greet": "MY kitchen! Get out!",
+      "rat_chef_appeased": "...you think my cooking smells good?"
+    }
+  }
+}

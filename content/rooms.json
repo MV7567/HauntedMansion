@@ -1,0 +1,18 @@
+{
+  "kitchen": {
+    "name": "Kitchen",
+    "description": "The smell of rotten food fills the air. Pots and pans hang from the ceiling, swaying gently despite the lack of wind."
+  },
+  "child_bedroom": {
+    "name": "Child's Bedroom",
+    "description": "Toys are scattered across the floor. A small bed sits in the corner, its sheets twisted into a knot."
+  },
+  "library": {
+    "name": "Library",
+    "description": "Floor-to-ceiling bookshelves line the walls. Several books float open in mid-air, their pages turning on their own."
+  },
+  "entrance_hall": {
+    "name": "Entrance Hall",
+    "description": "A grand staircase dominates the room. Portraits on the walls seem to watch your every move."
+  }
+}

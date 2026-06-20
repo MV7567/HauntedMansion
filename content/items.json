@@ -1,0 +1,14 @@
+{
+  "healing_potion": {
+    "name": "Healing Potion",
+    "description": "A small vial of glowing red liquid. Restores 30 HP."
+  },
+  "teddy_bear": {
+    "name": "Teddy Bear",
+    "description": "A worn stuffed bear. Someone must miss it terribly."
+  },
+  "rusty_sword": {
+    "name": "Rusty Sword",
+    "description": "An old sword found in the mansion. Still sharp enough to do damage."
+  }
+}

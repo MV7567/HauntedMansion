@@ -7,6 +7,7 @@
     {
         public bool WasHit { get; init; }
         public int DamageDealt { get; init; }
+
         public string Message { get; init; }
     }
 }

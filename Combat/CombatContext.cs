@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using HauntedMansion.Entities;
+﻿using HauntedMansion.Entities;
 
 namespace HauntedMansion.Combat
 {
@@ -9,8 +8,8 @@ namespace HauntedMansion.Combat
     /// </summary>
     public class CombatContext
     {
-        public Player Player { get; init; }
-        public List<Enemy> Enemies { get; init; }
+        public Player Player { get; set; }
+        public List<Enemy> Enemies { get; set; } = new();
         public int TurnNumber { get; set; }
 
         public CombatContext(Player player, List<Enemy> enemies)

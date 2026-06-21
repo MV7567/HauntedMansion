@@ -1,0 +1,64 @@
+{
+  "ghost_child": {
+    "name": "Ghost Child",
+    "type": "boss",
+    "encounterWeight": 1.0,
+    "startingNodeId": "ghost_child",
+    "stats": {
+      "attack": 18,
+      "defence": 8,
+      "magic": 5,
+      "speed": 10,
+      "accuracy": 75,
+      "maxHP": 80
+    },
+    "bodyParts": [
+      { "type": "Head",     "hitMod": 0.6, "dmgMult": 1.8 },
+      { "type": "Torso",    "hitMod": 1.0, "dmgMult": 1.0 },
+      { "type": "LeftArm",  "hitMod": 0.8, "dmgMult": 0.7 },
+      { "type": "RightArm", "hitMod": 0.8, "dmgMult": 0.7 },
+      { "type": "Legs",     "hitMod": 0.9, "dmgMult": 0.8 }
+    ]
+  },
+  "rat_chef": {
+    "name": "Rat Chef",
+    "type": "normal",
+    "startingNodeId": "rat_chef",
+    "stats": {
+      "attack": 8,
+      "defence": 3,
+      "magic": 15,
+      "speed": 12,
+      "accuracy": 70,
+      "maxHP": 40
+    },
+    "bodyParts": [
+      { "type": "Head",     "hitMod": 0.5, "dmgMult": 2.0 },
+      { "type": "Torso",    "hitMod": 1.0, "dmgMult": 1.0 },
+      { "type": "LeftArm",  "hitMod": 0.8, "dmgMult": 0.8 },
+      { "type": "RightArm", "hitMod": 0.8, "dmgMult": 0.8 },
+      { "type": "Legs",     "hitMod": 0.9, "dmgMult": 0.7 }
+    ]
+  },
+  "living_armor": {
+    "name": "Living Armor",
+    "type": "normal",
+    "encounterWeight": 0.7,
+    "startingNodeId": "living_armor",
+    "stats": {
+      "attack": 20,
+      "defence": 25,
+      "magic": 0,
+      "speed": 5,
+      "accuracy": 65,
+      "maxHP": 60
+    },
+    "bodyParts": [
+      { "type": "Head",     "hitMod": 0.5, "dmgMult": 1.5 },
+      { "type": "Torso",    "hitMod": 1.0, "dmgMult": 1.0 },
+      { "type": "LeftArm",  "hitMod": 0.8, "dmgMult": 0.9 },
+      { "type": "RightArm", "hitMod": 0.8, "dmgMult": 0.9 },
+      { "type": "Legs",     "hitMod": 0.9, "dmgMult": 0.8 }
+    ]
+  }
+}

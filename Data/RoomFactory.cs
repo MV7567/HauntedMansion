@@ -23,69 +23,79 @@ namespace HauntedMansion.Data
         /// </summary>
         public Room CreateRoom(string roomId)
         {
-            return roomId switch
+            var data = _loader.GetRoomData(roomId);
+            if (data == null)
             {
-                "kitchen" => CreateKitchen(),
-                "child_bedroom" => CreateChildBedroom(),
-                "library" => CreateLibrary(),
-                "entrance_hall" => CreateEntranceHall(),
-                _ => null
+                Console.WriteLine($"[RoomFactory] Unknown room: {roomId}");
+                return null;
+            }
+
+            // Build normal enemies
+            var normalEnemies = data.Enemies
+                .Select(id => _enemyFactory.CreateEnemy(id) as NormalEnemy)
+                .Where(e => e != null)
+                .ToList();
+
+            // Build boss if present
+            BossEnemy boss = null;
+            if (!string.IsNullOrEmpty(data.Boss))
+                boss = _enemyFactory.CreateEnemy(data.Boss) as BossEnemy;
+
+            return new Room(roomId, normalEnemies, boss, _loader);
+        }
+
+        /// <summary>
+        /// Builds the entire map from rooms.json.
+        /// Creates all rooms and connects them based on connections field.
+        /// Call this instead of creating rooms manually
+        /// </summary>
+
+        public Map BuildMap(string startingRoomId)
+        {
+            var map = new Map();
+            var allRoomIds = GetAllRoomIds();
+
+            // 1. create all rooms
+            foreach (var roomId in allRoomIds)
+            {
+                var room = CreateRoom(roomId);
+                if (room != null)
+                    map.AddRoom(room);
+            }
+
+            // 2. connect rooms
+            var connected = new HashSet<string>();
+            foreach (var roomId in allRoomIds)
+            {
+                var data = _loader.GetRoomData(roomId);
+                if (data?.Connections == null) continue;
+
+                foreach (var neighbourId in data.Connections)
+                {
+                    string key = string.Compare(roomId, neighbourId) < 0
+                        ? $"{roomId}:{neighbourId}"
+                        : $"{neighbourId}:{roomId}";
+
+                    if (connected.Add(key))
+                        map.ConnectRooms(roomId, neighbourId);
+                }
+            }
+
+            map.SetStartingRoom(startingRoomId);
+            return map;
+        }
+
+        private List<string> GetAllRoomIds()
+        {
+            // future: IContentLoader could expose a GetAllRoomIds() method
+            // for now hardcode known room IDs
+            return new List<string>
+            {
+                "entrance_hall",
+                "kitchen",
+                "child_bedroom",
+                "library"
             };
         }
-
-        private Room CreateKitchen()
-        {
-            var enemies = new List<NormalEnemy>();
-            // future: add normal enemies when AI is implemented
-
-            var boss = _enemyFactory.CreateEnemy("rat_chef") as BossEnemy;
-
-            return new Room(
-                roomId: "kitchen",
-                normalEnemies: enemies,
-                BossEnemy: boss,
-                loader: _loader
-            );
-        }
-
-        private Room CreateChildBedroom()
-        {
-            var enemies = new List<NormalEnemy>();
-            
-            var boss = _enemyFactory.CreateEnemy("ghost_child") as BossEnemy
-
-            return new Room(
-                roomId: "child_bedroom",
-                normalEnemies: enemies,
-                BossEnemy: boss,
-                loader: _loader
-            );
-        }
-        
-        private Room CreateLibrary()
-        {
-            var enemies = new List<NormalEnemy>
-            {
-                _enemyFactory.CreateEnemy("living_armor") as NormalEnemy
-            };
-
-            return new Room(
-                roomId: "library",
-                normalEnemies: enemies,
-                bossEnemy: null,
-                loader: _loader
-            );
-        }
-        
-        private Room CreateEntranceHall()
-        {
-            return new Room(
-                roomId: "entrance_hall",
-                normalEnemies: new List<NormalEnemy>(),
-                bossEnemy: null,
-                loader: _loader
-            );
-        }
-
     }
 }

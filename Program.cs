@@ -9,27 +9,9 @@ using HauntedMansion.World;
 var loader = new JsonContentLoader();
 loader.LoadAll("content");
 
-// build map
+// Build map - reads everything from JSON automatically
 var roomFactory = new RoomFactory(loader);
-var map = new Map();
-
-var kitchen = roomFactory.CreateRoom("kitchen");
-var childBedroom = roomFactory.CreateRoom("child_bedroom");
-var library = roomFactory.CreateRoom("library");
-var entranceHall = roomFactory.CreateRoom("entrance_hall");
-
-map.AddRoom(kitchen);
-map.AddRoom(childBedroom);
-map.AddRoom(library);
-map.AddRoom(entranceHall);
-
-// Connect rooms
-map.ConnectRooms("entrance_hall", "kitchen");
-map.ConnectRooms("entrance_hall", "library");
-map.ConnectRooms("kitchen", "child_bedroom");
-
-// Set starting room
-map.SetStartingRoom("entrance_hall");
+var map = roomFactory.BuildMap("entrance_hall");
 
 //create player
 Console.WriteLine("Enter your name: ");

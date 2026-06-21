@@ -1,11 +1,9 @@
 ﻿using HauntedMansion.Combat;
 using HauntedMansion.Combat.Actions;
-using HauntedMansion.Combat.States;
 using HauntedMansion.Data;
 using HauntedMansion.Dialogue;
 using HauntedMansion.Entities;
 using HauntedMansion.UI;
-using HauntedMansion.UI.Commands;
 
 namespace HauntedMansion.GameLoop
 {
@@ -17,6 +15,7 @@ namespace HauntedMansion.GameLoop
     public class CombatGameState : IGameState
     {
         private readonly GameManager _manager;
+        private readonly IContentLoader _loader;
         private readonly CombatEngine _combatEngine = new();
         private readonly CombatContext _context;
         private readonly DialogueEngine _dialogueEngine;
@@ -24,11 +23,10 @@ namespace HauntedMansion.GameLoop
         public CombatGameState(GameManager manager, List<Enemy> enemies, IContentLoader loader)
         {
             _manager = manager;
+            _loader = loader;
             _dialogueEngine = new DialogueEngine(loader);
-            _context = new CombatContext
+            _context = new CombatContext(manager.Player, enemies)
             {
-                Player = manager.Player,
-                Enemies = enemies,
                 TurnNumber = 1
             };
         }
@@ -59,7 +57,7 @@ namespace HauntedMansion.GameLoop
                 if (_context.Enemies.All(e => !e.IsAlive()))
                 {
                     _manager.Renderer.RenderMessage("All enemies defeated!");
-                    _manager.ChangeState(new ExplorationGameState(_manager));
+                    _manager.ChangeState(new ExplorationGameState(_manager, _loader));
                     return;
                 }
                 
@@ -90,6 +88,7 @@ namespace HauntedMansion.GameLoop
         private bool HandlePlayerTurn()
         {
             var enemies = _context.Enemies.Where(e => e.IsAlive()).ToList();
+            
             _manager.Renderer.RenderMenu("Your turn:", new List<string>
             {
                 "Attack",
@@ -155,7 +154,7 @@ namespace HauntedMansion.GameLoop
             var consumables = _manager.Player.PlayerInventory.GetConsumables();
             if (consumables.Count == 0)
             {
-                _manager.Renderer.RenderMessage("No comsumables.");
+                _manager.Renderer.RenderMessage("You don't have any consumables.");
                 return false;
             }
 
@@ -177,16 +176,16 @@ namespace HauntedMansion.GameLoop
         private bool HandleDialogue(List<Enemy> enemies)
         {
             // only enemies with dialogue
-            var dialogueable = enemies.OfType<IDialoguable>().FirstOrDefault();
+            var dialoguable = enemies.OfType<IDialoguable>().FirstOrDefault();
 
-            if (dialogueable == null)
+            if (dialoguable == null)
             {
                 _manager.Renderer.RenderMessage("This enemy cannot be reasoned with.");
                 return false;
             }
             
             // Start dialogue - DialogueEngine handles navigation
-            _dialogueEngine.StartConversation(dialogueable);
+            _dialogueEngine.StartConversation(dialoguable);
 
             while (_dialogueEngine.IsActive)
             {
@@ -204,7 +203,6 @@ namespace HauntedMansion.GameLoop
                 }
                 _dialogueEngine.SelectChoice(choice - 1, _manager.Player, _context);
             }
-
             return true;
         }
 
@@ -213,11 +211,7 @@ namespace HauntedMansion.GameLoop
             // Only enemies in SparableState can be spared
             var sparable = enemies
                 .Where(e => e.IsAlive())
-                .FirstOrDefault(e =>
-                {
-                    var action = e.GetAction(_context);
-                    return action is IdleAction;
-                });
+                .FirstOrDefault(e => e.GetAction(_context) is IdleAction);
             
             if (sparable == null)
             {

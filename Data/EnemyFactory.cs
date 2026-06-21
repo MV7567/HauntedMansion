@@ -24,95 +24,47 @@ namespace HauntedMansion.Data
         /// </summary>
         public Enemy CreateEnemy(string enemyId)
         {
-            return enemyId switch
+            var data = _loader.GetEnemyData(enemyId);
+            if (data == null)
             {
-                "ghost_child" => CreateGhostChild(),
-                "rat_chef" => CreateRatChef(),
-                "living_armor" => CreateLivingArmor(),
-                _ => null
-            };
-        }
-
-        private BossEnemy CreateGhostChild()
-        {
-            var stats = new CharacterStats(
-                attack: 8, defence: 3, magic: 15,
-                speed: 12, accuracy: 70, maxHP: 40
-            );
-
-            var bodyParts = new List<BodyPart>
-            {
-                new BodyPart(BodyPartType.Head, hitMod: 0.6f, dmgMult: 1.8f),
-                new BodyPart(BodyPartType.Torso, hitMod: 1.0f, dmgMult: 1.0f),
-                new BodyPart(BodyPartType.LeftArm, hitMod: 0.8f, dmgMult: 0.7f),
-                new BodyPart(BodyPartType.RightArm, hitMod: 0.8f, dmgMult: 0.7f),
-                new BodyPart(BodyPartType.Legs, hitMod: 0.9f, dmgMult: 0.8f)
-            };
-            var ai = new BasicEnemyAI();
+                Console.WriteLine($"[EnemyFactory] Unknown enemy: {enemyId}");
+                return null;
+            }
             
-            return new BossEnemy(
-                name: "Ghost Child",
-                baseStats: stats,
-                bodyParts: bodyParts,
-                ai: ai,
-                startingNodeId: "ghost_child"
-            );
-        }
-
-        private BossEnemy CreateRatChef()
-        {
             var stats = new CharacterStats(
-                attack: 18, defence: 8, magic: 5,
-                speed: 10, accuracy: 75, maxHP: 80
+                data.Stats.Attack,
+                data.Stats.Defence,
+                data.Stats.Magic,
+                data.Stats.Speed,
+                data.Stats.Accuracy,
+                data.Stats.MaxHP
             );
-
-            var bodyParts = new List<BodyPart>
-            {
-                new BodyPart(BodyPartType.Head,   hitMod: 0.5f, dmgMult: 2.0f),
-                new BodyPart(BodyPartType.Torso,  hitMod: 1.0f, dmgMult: 1.0f),
-                new BodyPart(BodyPartType.LeftArm,  hitMod: 0.8f, dmgMult: 0.8f),
-                new BodyPart(BodyPartType.RightArm, hitMod: 0.8f, dmgMult: 0.8f),
-                new BodyPart(BodyPartType.Legs,   hitMod: 0.9f, dmgMult: 0.7f)
-            };
+            
+            var bodyParts = data.BodyParts.Select(bp => new BodyPart(
+                ParseBodyPartType(bp.Type),
+                bp.HitMod,
+                bp.DmgMult
+            )).ToList();
             
             var ai = new BasicEnemyAI();
-
-            return new BossEnemy(
-                name: "Rat Chef",
-                baseStats: stats,
-                bodyParts: bodyParts,
-                ai: ai,
-                startingNodeId: "rat_chef"
-            );
+            
+            return data.Type == "boss"
+                ? new BossEnemy(data.Name, stats, bodyParts, ai, data.StartingNodeId)
+                : new NormalEnemy(data.Name, stats, bodyParts, ai,
+                    data.EncounterWeight, data.StartingNodeId);
         }
         
-        private NormalEnemy CreateLivingArmor()
+        private BodyPartType ParseBodyPartType(string type)
         {
-            var stats = new CharacterStats(
-                attack: 20, defence: 25, magic: 0,
-                speed: 5, accuracy: 65, maxHP: 60
-            );
-
-            var bodyParts = new List<BodyPart>
+            return type switch
             {
-                new BodyPart(BodyPartType.Head,   hitMod: 0.5f, dmgMult: 1.5f),
-                new BodyPart(BodyPartType.Torso,  hitMod: 1.0f, dmgMult: 1.0f),
-                new BodyPart(BodyPartType.LeftArm,  hitMod: 0.8f, dmgMult: 0.9f),
-                new BodyPart(BodyPartType.RightArm, hitMod: 0.8f, dmgMult: 0.9f),
-                new BodyPart(BodyPartType.Legs,   hitMod: 0.9f, dmgMult: 0.8f)
+                "Head"     => BodyPartType.Head,
+                "Torso"    => BodyPartType.Torso,
+                "LeftArm"  => BodyPartType.LeftArm,
+                "RightArm" => BodyPartType.RightArm,
+                "Legs"     => BodyPartType.Legs,
+                _ => BodyPartType.Torso
             };
-            
-            var ai = new BasicEnemyAI();
-
-            return new NormalEnemy(
-                name: "Living Armor",
-                baseStats: stats,
-                bodyParts: bodyParts,
-                ai: ai,
-                weight: 0.7f,
-                startingNodeId: "living_armor"
-            );
         }
-
     }
 }

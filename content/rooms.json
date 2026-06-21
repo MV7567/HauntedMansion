@@ -1,18 +1,30 @@
 {
+  "entrance_hall": {
+    "name": "Entrance Hall",
+    "description": "A grand staircase dominates the room. Portraits on the walls seem to watch your every move.",
+    "enemies": [],
+    "boss": null,
+    "connections": ["kitchen", "library"]
+  },
   "kitchen": {
     "name": "Kitchen",
-    "description": "The smell of rotten food fills the air. Pots and pans hang from the ceiling, swaying gently despite the lack of wind."
+    "description": "The smell of rotten food fills the air. Pots and pans hang from the ceiling, swaying gently.",
+    "enemies": [],
+    "boss": "rat_chef",
+    "connections": ["entrance_hall", "child_bedroom"]
   },
   "child_bedroom": {
     "name": "Child's Bedroom",
-    "description": "Toys are scattered across the floor. A small bed sits in the corner, its sheets twisted into a knot."
+    "description": "Toys are scattered across the floor. A small bed sits in the corner.",
+    "enemies": ["ghost_child"],
+    "boss": null,
+    "connections": ["kitchen"]
   },
   "library": {
     "name": "Library",
-    "description": "Floor-to-ceiling bookshelves line the walls. Several books float open in mid-air, their pages turning on their own."
-  },
-  "entrance_hall": {
-    "name": "Entrance Hall",
-    "description": "A grand staircase dominates the room. Portraits on the walls seem to watch your every move."
+    "description": "Floor-to-ceiling bookshelves line the walls. Several books float in mid-air.",
+    "enemies": ["living_armor"],
+    "boss": null,
+    "connections": ["entrance_hall"]
   }
 }

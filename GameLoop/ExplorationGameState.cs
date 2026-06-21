@@ -95,7 +95,7 @@ namespace HauntedMansion.GameLoop
                             _manager.ChangeState(new CombatGameState(
                                 _manager,
                                 new List<Enemy> { encountered },
-                                loader));
+                                _loader));
                             return;
                         }
                     }

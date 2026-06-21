@@ -5,10 +5,13 @@
     /// </summary>
     public interface IContentLoader
     {
-        void LoadAll();
+        void LoadAll(string path);
         string GetRoomDescription(string roomId);
-        List<string> GetDialogueLines(string roomId);
+        List<string> GetDialogueLines(string entityId);
         string GetItemDescription(string itemId);
         string GetDialogueLine(string lineId);
+        List<string> GetAllRoomIds();
+        JsonContentLoader.EnemyData? GetEnemyData(string enemyId);
+        JsonContentLoader.RoomData? GetRoomData(string roomId);
     }
 }

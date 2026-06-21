@@ -1,6 +1,11 @@
-﻿namespace HauntedMansion.GameLoop;
+﻿using HauntedMansion.UI;
 
-public interface IGameState
+namespace HauntedMansion.GameLoop
 {
-    
+    public interface IGameState
+    {
+        void HandleInput(ICommand command);
+        void OnEnter();
+        void OnExit();
+    }
 }

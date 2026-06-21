@@ -1,29 +1,33 @@
-﻿using HauntedMansion.Combat.Interfaces;
+﻿using HauntedMansion.Combat.Actions;
+using HauntedMansion.Combat.Interfaces;
 using HauntedMansion.Entities;
 
 namespace HauntedMansion.Combat.States
 {
     /// <summary>
-    /// Enemy is provoked... (future implementation)
+    /// Enemy is provoked - higher attack, always attacks, lower accuracy
     /// </summary>
     public class AggressiveState : ICombatState
     {
+        private const int AttackBonus = 5;
+        private const int AccuracyDrop = -15;
+        private readonly CombatEngine _engine = new();
+        
         public void OnEnter(Enemy enemy)
         {
-            // Triggered when entering this state
-            // Future: Apply a temporary StatModifier to increase attack
+            enemy.ApplyStateMod(attack: AttackBonus, accuracy: AccuracyDrop);
+            Console.WriteLine($"{enemy.Name} becomes aggressive!");
         }
 
         public IAction Execute(Enemy enemy, CombatContext context)
         {
-            // Instead of using AI a specific aggressive action is chosen
-            return null;
+            // Always attacks - ignores AI
+            return new AttackAction(enemy, _engine, AttackType.Physical);
         }
 
         public void OnExit(Enemy enemy)
         {
-            // Triggered when leaving the state
-            // Future: Remove the stat modifier applied on enter
+            enemy.ResetStateMod();
         }
     }
 }

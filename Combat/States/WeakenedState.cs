@@ -1,4 +1,5 @@
 ﻿using HauntedMansion.Combat.Interfaces;
+using HauntedMansion.Combat.Actions;
 using HauntedMansion.Entities;
 
 namespace HauntedMansion.Combat.States
@@ -8,15 +9,26 @@ namespace HauntedMansion.Combat.States
     /// </summary>
     public class WeakenedState : ICombatState
     {
-        public void OnEnter(Enemy enemy) {}
+        private const int AttackPenalty = -3;
+        private const int SpeedPenalty = -3;
+
+        public void OnEnter(Enemy enemy)
+        {
+            enemy.ApplyStateMod(attack: AttackPenalty, speed: SpeedPenalty);
+            Console.WriteLine($"{enemy.Name} looks weakened...");
+        }
 
         public IAction Execute(Enemy enemy, CombatContext context)
         {
-            // Force defensive behavior or chance to flee
+            // Return null to let AI decide
+            // AI may still attack but with reduced stats
             // Future: return new DefendAction() or FleeAction();
             return null;
         }
-        
-        public void OnExit(Enemy enemy) {}
+
+        public void OnExit(Enemy enemy)
+        {
+            enemy.ResetStateMod();
+        }
     }
 }

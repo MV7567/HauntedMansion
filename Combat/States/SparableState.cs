@@ -1,4 +1,5 @@
-﻿using HauntedMansion.Combat.Interfaces;
+﻿using HauntedMansion.Combat.Actions;
+using HauntedMansion.Combat.Interfaces;
 using HauntedMansion.Entities;
 
 namespace HauntedMansion.Combat.States
@@ -8,14 +9,13 @@ namespace HauntedMansion.Combat.States
     {
         public void OnEnter(Enemy enemy)
         {
-            // Signals to the game loop that this enemy can now be spared
+            Console.WriteLine($"{enemy.Name} calms down. You can spare them.");
         }
 
         public IAction Execute(Enemy enemy, CombatContext context)
         {
-            // A spared enemy does nothing on its turn 
-            // Future: return new IdleAction();
-            return null;
+            // Enemy does nothing on its turn
+            return new IdleAction($"{enemy.Name} doesn't attack.");
         }
         
         public void OnExit(Enemy enemy) {}

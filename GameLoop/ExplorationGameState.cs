@@ -1,4 +1,5 @@
-﻿using HauntedMansion.Entities;
+﻿using HauntedMansion.Data;
+using HauntedMansion.Entities;
 using HauntedMansion.UI;
 using HauntedMansion.UI.Commands;
 using HauntedMansion.World;
@@ -13,10 +14,12 @@ namespace HauntedMansion.GameLoop
     public class ExplorationGameState : IGameState
     {
         private readonly GameManager _manager;
+        private readonly IContentLoader _loader;
 
-        public ExplorationGameState(GameManager manager)
+        public ExplorationGameState(GameManager manager, IContentLoader loader)
         {
             _manager = manager;
+            _loader = loader;
         }
 
         public void OnEnter()
@@ -91,7 +94,8 @@ namespace HauntedMansion.GameLoop
                         {
                             _manager.ChangeState(new CombatGameState(
                                 _manager,
-                                new List<Enemy> { encountered }));
+                                new List<Enemy> { encountered },
+                                loader));
                             return;
                         }
                     }

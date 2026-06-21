@@ -1,4 +1,5 @@
 ﻿using HauntedMansion.Combat;
+using HauntedMansion.Combat.Actions;
 using HauntedMansion.Combat.States;
 using HauntedMansion.Data;
 using HauntedMansion.Dialogue;
@@ -18,10 +19,12 @@ namespace HauntedMansion.GameLoop
         private readonly GameManager _manager;
         private readonly CombatEngine _combatEngine = new();
         private readonly CombatContext _context;
+        private readonly DialogueEngine _dialogueEngine;
 
-        public CombatGameState(GameManager manager, List<Enemy> enemies)
+        public CombatGameState(GameManager manager, List<Enemy> enemies, IContentLoader loader)
         {
             _manager = manager;
+            _dialogueEngine = new DialogueEngine(loader);
             _context = new CombatContext
             {
                 Player = manager.Player,
@@ -182,23 +185,51 @@ namespace HauntedMansion.GameLoop
                 return false;
             }
             
-            // future: full dialogue engine integration
-            _manager.Renderer.RenderMessage("You attempt to talk to the enemy...");
+            // Start dialogue - DialogueEngine handles navigation
+            _dialogueEngine.StartConversation(dialogueable);
+
+            while (_dialogueEngine.IsActive)
+            {
+                var choices = _dialogueEngine.GetCurrentChoices();
+                if (choices.Count == 0) break;
+                
+                var options = choices.Select(c => c.Text).ToList();
+                _manager.Renderer.RenderMenu("Say:", options);
+                
+                if (!int.TryParse(Console.ReadLine(), out int choice) ||
+                    choice < 1 || choice > choices.Count)
+                {
+                    _manager.Renderer.RenderMessage("Invalid choice.");
+                    continue;
+                }
+                _dialogueEngine.SelectChoice(choice - 1, _manager.Player, _context);
+            }
+
             return true;
         }
 
         private bool HandleSpare(List<Enemy> enemies)
         {
-            var sparable = enemies.OfType<NormalEnemy>().FirstOrDefault(e => e.IsAlive());
-
+            // Only enemies in SparableState can be spared
+            var sparable = enemies
+                .Where(e => e.IsAlive())
+                .FirstOrDefault(e =>
+                {
+                    var action = e.GetAction(_context);
+                    return action is IdleAction;
+                });
+            
             if (sparable == null)
             {
                 _manager.Renderer.RenderMessage("No enemy can be spared.");
                 return false;
             }
             
-            // future: check if the enemy is in SparableState
-            sparable.MarkDefeated();
+            if (sparable is NormalEnemy normal)
+                normal.MarkDefeated();
+            else if (sparable is BossEnemy boss)
+                boss.BecomeNPC();
+            
             _manager.Renderer.RenderMessage($"{sparable.Name} has been spared.");
             _context.Enemies.Remove(sparable);
             return true;
@@ -206,11 +237,8 @@ namespace HauntedMansion.GameLoop
 
         private void HandleEnemyTurn(Enemy enemy)
         {
-            // future: use enemy AI and State
-            // placeholder: simple attack
-            var result = _combatEngine.ExecuteAttack(
-                enemy, _manager.Player, AttackType.Physical);
-            _manager.Renderer.RenderMessage(result.Message);
+            var action = enemy.GetAction(_context);
+            action?.Execute(_context);
         }
     }
 }

@@ -48,7 +48,7 @@ var player = new Player(name, baseStats);
 // Start game
 var renderer = new TextRenderer();
 var gameManager = new GameManager(player, map, renderer);
-var startingState = new ExplorationGameState(gameManager);
+var startingState = new ExplorationGameState(gameManager, loader);
 
 renderer.RenderMessage("Welcome to Haunted Mansion.");
 renderer.RenderMessage($"You wake up in the entrance hall, {name}...");

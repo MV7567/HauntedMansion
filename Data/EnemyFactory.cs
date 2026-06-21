@@ -1,5 +1,6 @@
 ﻿using HauntedMansion.Core;
 using HauntedMansion.Entities;
+using HauntedMansion.Combat.AI;
 
 namespace HauntedMansion.Data
 {
@@ -47,12 +48,13 @@ namespace HauntedMansion.Data
                 new BodyPart(BodyPartType.RightArm, hitMod: 0.8f, dmgMult: 0.7f),
                 new BodyPart(BodyPartType.Legs, hitMod: 0.9f, dmgMult: 0.8f)
             };
+            var ai = new BasicEnemyAI();
             
             return new BossEnemy(
                 name: "Ghost Child",
                 baseStats: stats,
                 bodyParts: bodyParts,
-                ai: null,
+                ai: ai,
                 startingNodeId: "ghost_child"
             );
         }
@@ -72,12 +74,14 @@ namespace HauntedMansion.Data
                 new BodyPart(BodyPartType.RightArm, hitMod: 0.8f, dmgMult: 0.8f),
                 new BodyPart(BodyPartType.Legs,   hitMod: 0.9f, dmgMult: 0.7f)
             };
+            
+            var ai = new BasicEnemyAI();
 
             return new BossEnemy(
                 name: "Rat Chef",
                 baseStats: stats,
                 bodyParts: bodyParts,
-                ai: null,
+                ai: ai,
                 startingNodeId: "rat_chef"
             );
         }
@@ -97,12 +101,14 @@ namespace HauntedMansion.Data
                 new BodyPart(BodyPartType.RightArm, hitMod: 0.8f, dmgMult: 0.9f),
                 new BodyPart(BodyPartType.Legs,   hitMod: 0.9f, dmgMult: 0.8f)
             };
+            
+            var ai = new BasicEnemyAI();
 
             return new NormalEnemy(
                 name: "Living Armor",
                 baseStats: stats,
                 bodyParts: bodyParts,
-                ai: null,
+                ai: ai,
                 weight: 0.7f,
                 startingNodeId: "living_armor"
             );

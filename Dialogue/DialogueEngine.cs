@@ -1,27 +1,21 @@
 ﻿using HauntedMansion.Combat;
-using HauntedMansion.Combat.Interfaces;
 using HauntedMansion.Data;
+using HauntedMansion.Dialogue.Actions;
 using HauntedMansion.Entities;
 
 namespace HauntedMansion.Dialogue
 {
-    public class DialogueEngine
+    public class DialogueEngine(IContentLoader loader)
     {
-        private readonly IContentLoader _loader;
         private DialogueNode? _currentNode;
         private DialogueTree? _currentTree;
 
         public bool IsActive { get; private set; }
         public DialogueNode? CurrentNode => _currentNode;
         
-        public DialogueEngine(IContentLoader loader)
-        {
-            _loader = loader;
-        }
-        
         public void StartConversation(IDialoguable entity, Player player)
         {
-            // base key and current node
+            // Base key and current node
             string treeId = entity.GetBaseTreeId(); 
             string startNodeId = entity.GetStartingNode(); 
 
@@ -59,7 +53,7 @@ namespace HauntedMansion.Dialogue
         }
 
         public List<DialogueChoice> GetCurrentChoices() =>
-            _currentNode?.Choices ?? new List<DialogueChoice>();
+            _currentNode?.Choices ?? [];
 
         public void EndConversation()
         {
@@ -72,13 +66,13 @@ namespace HauntedMansion.Dialogue
         {
             if (string.IsNullOrEmpty(entityId)) return null;
             
-            var data = _loader.GetDialogueData(entityId);
+            var data = loader.GetDialogueData(entityId);
             if (data == null) return null;
 
             var tree = new DialogueTree();
 
-            // 1. advanced tree (for bosses)
-            if (data.Nodes != null && data.Nodes.Count > 0)
+            // 1. Advanced tree (for bosses and complex NPCs)
+            if (data.Nodes is { Count: > 0 })
             {
                 foreach (var kvp in data.Nodes)
                 {
@@ -89,25 +83,24 @@ namespace HauntedMansion.Dialogue
                     {
                         foreach (var cData in nodeData.Choices)
                         {
-                            // if the choice requires an item and the player doesnt have it, skip
+                            // If the choice requires an item and the player doesn't have it, skip
                             if (!string.IsNullOrEmpty(cData.RequiredItem) && !player.PlayerInventory.HasKeyItem(cData.RequiredItem))
                                 continue; 
 
                             IDialogueAction? action = null;
                             if (!string.IsNullOrEmpty(cData.ActionType) && enemyRef != null)
                             {
-                                // states fromjson
-                                ICombatState targetState = cData.State switch {
-                                    "Sparable" => new HauntedMansion.Combat.States.SparableState(),
-                                    "Aggressive" => new HauntedMansion.Combat.States.AggressiveState(),
-                                    "Weakened" => new HauntedMansion.Combat.States.WeakenedState(),
-                                    _ => new HauntedMansion.Combat.States.AggressiveState()
-                                };
+                                // Target state flag from JSON
+                                string targetState = cData.State ?? "";
 
                                 if (cData.ActionType == "ItemAndState" && !string.IsNullOrEmpty(cData.RequiredItem))
-                                    action = new HauntedMansion.Dialogue.Actions.ItemAndStateDialogueAction(enemyRef, targetState, cData.RequiredItem, player, cData.ActionMessage ?? "");
+                                {
+                                    action = new ItemAndStateDialogueAction(enemyRef, targetState, cData.RequiredItem, player, cData.ActionMessage ?? "");
+                                }
                                 else if (cData.ActionType == "SetState")
-                                    action = new HauntedMansion.Dialogue.Actions.SetStateDialogueAction(enemyRef, targetState, cData.ActionMessage ?? "");
+                                {
+                                    action = new SetStateDialogueAction(enemyRef, targetState, cData.ActionMessage ?? "");
+                                }
                             }
 
                             node.Choices.Add(new DialogueChoice 
@@ -123,24 +116,24 @@ namespace HauntedMansion.Dialogue
                 return tree;
             }
 
-            // 2. simple (for normal enemies)
-            if (data.Lines != null && data.Lines.Count > 0)
+            // 2. Simple linear tree (for normal enemies)
+            if (data.Lines is { Count: > 0 })
             {
                 for (int i = 0; i < data.Lines.Count; i++)
                 {
                     bool isLast = i == data.Lines.Count - 1;
                     
-                    // the first node has to be names the same as startingNodeId from enemies.json
+                    // The first node has to be named the same as startingNodeId from enemies.json
                     string nodeId = i == 0 ? entityId : $"{entityId}_{i}"; 
                     
                     var node = new DialogueNode
                     {
                         NodeID = nodeId,
                         Text = data.Lines[i],
-                        Choices = isLast ? new List<DialogueChoice>() : new List<DialogueChoice>
-                        {
+                        Choices = isLast ? [] :
+                        [
                             new DialogueChoice { Text = "Next...", NextNodeID = $"{entityId}_{i + 1}", Action = null }
-                        }
+                        ]
                     };
                     tree.AddNode(node);
                 }

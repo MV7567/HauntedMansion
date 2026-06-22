@@ -9,12 +9,14 @@ namespace HauntedMansion.Inventory.Items
     /// </summary>
     public class Consumable : IItem
     {
+        public string ID { get; init; }
         public string Name { get; init; }
         public string Description { get; init; }
         private IEffect Effect { get; init; }
 
-        public Consumable(string name, string description, IEffect effect)
+        public Consumable(string id, string name, string description, IEffect effect)
         {
+            ID = id;
             Name = name;
             Description = description;
             Effect = effect;

@@ -27,7 +27,7 @@ namespace HauntedMansion.UI
             _renderer.RenderMessage("================================");
             _renderer.RenderMessage("       HAUNTED MANSION          ");
             _renderer.RenderMessage("================================");
-            _renderer.RenderMessage("\nEnter your name: ");
+            //_renderer.RenderMessage("\nEnter your name: ");
 
             var options = new List<string> { "New Game" };
             if (_saveManager.HasSaveFile())

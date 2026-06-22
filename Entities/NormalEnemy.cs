@@ -30,4 +30,5 @@ public class NormalEnemy : Enemy, IDialoguable
         IsDefeated = true;
     }
     public string GetStartingNode() => StartingNodeID;
+    public string GetBaseTreeId() => StartingNodeID;
 }

@@ -86,7 +86,7 @@ namespace HauntedMansion.Combat
             {
                 WasHit = true,
                 DamageDealt = damage,
-                Message = $"{attacker.Name} hit{partInfo} for{damage} damage!"
+                Message = $"{attacker.Name} hit{partInfo} for {damage} damage!"
             };
         }
     }

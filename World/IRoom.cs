@@ -12,6 +12,7 @@ namespace HauntedMansion.World
         List<IInteractable> GetInteractables();
         List<Enemy> GetEnemies();
         string OnEnter(Player player);
+        void ForceClearEnemies();
 
     }
 }

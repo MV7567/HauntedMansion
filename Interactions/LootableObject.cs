@@ -13,6 +13,8 @@ namespace HauntedMansion.Interactions
         private readonly List<IItem> _containedItems;
         private readonly int _containedMoney;
         private bool _isLooted;
+        public bool IsLooted => _isLooted;
+        public void SetLooted() => _isLooted = true;
 
         public LootableObject(string description, List<IItem> items, int money)
         {

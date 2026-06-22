@@ -28,8 +28,6 @@ namespace HauntedMansion.UI.Commands
             var (success, message) = _map.MoveToRoom(_targetRoomId, _player);
             if (!success)
                 _renderer.RenderPassageBlocked(message);
-            else if (!string.IsNullOrEmpty(message))
-                _renderer.RenderMessage(message);
         }
     }
 }

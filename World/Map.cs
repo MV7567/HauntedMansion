@@ -114,7 +114,7 @@ namespace HauntedMansion.World
         /// </summary>
         public (bool success, string message) MoveToRoom(string roomId, Player player)
         {
-            string currentId = _currentRoom?.GetRoomID();
+            string? currentId = _currentRoom?.GetRoomID();
 
             if (currentId != null && !IsPassable(currentId, roomId))
                 return (false, GetBlockedMessage(currentId, roomId));
@@ -123,8 +123,7 @@ namespace HauntedMansion.World
                 return (false, $"[ERROR] Room '{roomId}' does not exist.");
 
             _currentRoom = _rooms[roomId];
-            string description = _currentRoom.OnEnter(player);
-            return (true, description);
+            return (true, string.Empty);
         }
 
         /// <summary>
@@ -141,5 +140,9 @@ namespace HauntedMansion.World
         {
             return _rooms.Values.OfType<Room>().All(r => r.IsCleared);
         }
+        
+        public IEnumerable<IRoom> GetAllRooms() => _rooms.Values;
+        
+        public IRoom? GetRoom(string roomId) => _rooms.TryGetValue(roomId, out var r) ? r : null;
     }
 }

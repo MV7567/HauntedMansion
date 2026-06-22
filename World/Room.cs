@@ -35,7 +35,19 @@ namespace HauntedMansion.World
 
         public string GetRoomID() => _roomId;
 
-        public List<IInteractable> GetInteractables() => _interactables;
+        public List<IInteractable> GetInteractables()
+        {
+            // copy interaction lsit
+            var list = new List<IInteractable>(_interactables);
+    
+            // if the boss is alive and spared it can be interacted with
+            if (_bossEnemy != null && _bossEnemy.PostBattleNPC)
+            {
+                list.Add(_bossEnemy);
+            }
+    
+            return list;
+        }
 
         /// <summary>
         /// Returns all living enemies in this room
@@ -44,8 +56,7 @@ namespace HauntedMansion.World
         {
             var enemies = new List<Enemy>();
             
-            enemies.AddRange(_normalEnemies.Where(e => !e.IsDefeated));
-            
+            enemies.AddRange(_normalEnemies.Where(e => !e.IsDefeated && e.IsAlive()));            
             if (_bossEnemy != null && _bossEnemy.IsAlive() && !_bossEnemy.PostBattleNPC)
                 enemies.Add(_bossEnemy);
 
@@ -129,6 +140,22 @@ namespace HauntedMansion.World
 
             _isCleared = normalCleared && bossCleared;
         }
+        
+        public void ForceClearEnemies()
+        {
+            foreach (var e in _normalEnemies) e.MarkDefeated();
+            if (_bossEnemy != null) _bossEnemy.BecomeNPC();
+            _isCleared = true;
+        }
+        
         public bool IsCleared => _isCleared;
+        
+        public bool IsFullyLooted() => _interactables.OfType<LootableObject>().Any() && _interactables.OfType<LootableObject>().All(l => l.IsLooted);
+
+        public void ForceLootAll()
+        {
+            foreach (var lootable in _interactables.OfType<LootableObject>())
+                lootable.SetLooted();
+        }
     }
 }

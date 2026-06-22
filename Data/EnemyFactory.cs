@@ -49,7 +49,15 @@ namespace HauntedMansion.Data
             var ai = new BasicEnemyAI();
             
             return data.Type == "boss"
-                ? new BossEnemy(data.Name, stats, bodyParts, ai, data.StartingNodeId)
+                ? new BossEnemy(
+                    data.Name, 
+                    stats, 
+                    bodyParts, 
+                    ai, 
+                    data.StartingNodeId ?? "default", 
+                    data.postBattleNodeId ?? "default", 
+                    data.BaseTreeId ?? "default"
+                )
                 : new NormalEnemy(data.Name, stats, bodyParts, ai,
                     data.EncounterWeight, data.StartingNodeId);
         }

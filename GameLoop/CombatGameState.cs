@@ -57,6 +57,8 @@ namespace HauntedMansion.GameLoop
                 if (_context.Enemies.All(e => !e.IsAlive()))
                 {
                     _manager.Renderer.RenderMessage("All enemies defeated!");
+                    _manager.Renderer.RenderMessage("Press Enter to continue...");
+                    Console.ReadLine();
                     _manager.ChangeState(new ExplorationGameState(_manager, _loader));
                     return;
                 }
@@ -101,15 +103,25 @@ namespace HauntedMansion.GameLoop
             if (!int.TryParse(Console.ReadLine(), out int choice))
                 return false;
 
+            bool success = false;
             switch (choice)
             {
-                case 1: return HandleAttack(AttackType.Physical, enemies);
-                case 2: return HandleAttack(AttackType.Magical, enemies);
-                case 3: return HandleItem();
-                case 4: return HandleDialogue(enemies);
-                case 5: return HandleSpare(enemies);
+                case 1: success = HandleAttack(AttackType.Physical, enemies); break;
+                case 2: success = HandleAttack(AttackType.Magical, enemies); break;
+                case 3: success = HandleItem(); break;
+                case 4: success = HandleDialogue(enemies); break;
+                case 5: success = HandleSpare(enemies); break;
                 default: return false;
             }
+
+            // If action didnt succeed you can choose another
+            if (!success)
+            {
+                _manager.Renderer.RenderMessage("Press Enter, to choose action...");
+                Console.ReadLine();
+            }
+    
+            return success;
         }
 
         private bool HandleAttack(AttackType type, List<Enemy> enemies)
@@ -119,31 +131,40 @@ namespace HauntedMansion.GameLoop
             _manager.Renderer.RenderMenu("Target enemy:", enemyOptions);
 
             if (!int.TryParse(Console.ReadLine(), out int eChoice) ||
-                eChoice < 1 || eChoice > enemies.Count) return false;
+                eChoice < 1 || eChoice > enemies.Count)
+            {
+                _manager.Renderer.RenderMessage("Invalid choice.");
+                return false;
+            }
 
             var target = enemies[eChoice - 1];
 
-            var partOptions = Enum.GetValues(typeof(BodyPartType))
+            // Select body part
+            var availableParts = Enum.GetValues(typeof(BodyPartType))
                 .Cast<BodyPartType>()
-                .Select(p => p.ToString())
+                .Select(p => new { Type = p, Part = target.GetBodyPart(p) })
+                .Where(x => x.Part != null)
+                .ToList();
+
+            var partOptions = availableParts
+                .Select(x => x.Part!.IsDisabled
+                    ? $"{x.Type} [DISABLED]"
+                    : x.Type.ToString())
                 .ToList();
 
             _manager.Renderer.RenderMenu("Target body part:", partOptions);
 
             if (!int.TryParse(Console.ReadLine(), out int pChoice) ||
-                pChoice < 1 || pChoice > partOptions.Count) return false;
-
-            var partType = (BodyPartType)(pChoice - 1);
-            var part = target.GetBodyPart(partType);
-
-            if (part == null)
+                pChoice < 1 || pChoice > availableParts.Count)
             {
-                _manager.Renderer.RenderError("Invalid body part.");
+                _manager.Renderer.RenderMessage("Invalid choice.");
                 return false;
             }
 
+            var selectedPart = availableParts[pChoice - 1].Part!;
+
             var result = _combatEngine.ExecuteAttack(
-                _manager.Player, target, type, part);
+                _manager.Player, target, type, selectedPart);
             _manager.Renderer.RenderCombatResult(result);
             return true;
         }
@@ -184,7 +205,7 @@ namespace HauntedMansion.GameLoop
             }
             
             // Start dialogue - DialogueEngine handles navigation
-            _dialogueEngine.StartConversation(dialoguable);
+            _dialogueEngine.StartConversation(dialoguable, _manager.Player);
 
             while (_dialogueEngine.IsActive)
             {
@@ -192,8 +213,13 @@ namespace HauntedMansion.GameLoop
                 if (node == null) break;
                 
                 _manager.Renderer.RenderDialogue(node);
-                
-                if (node.Choices.Count == 0) break;
+
+                if (node.Choices.Count == 0)
+                {
+                    _manager.Renderer.RenderMessage("Press Enter, to continue...");
+                    Console.ReadLine();
+                    break;
+                }
                 
                 if (!int.TryParse(Console.ReadLine(), out int choice) ||
                     choice < 1 || choice > node.Choices.Count)

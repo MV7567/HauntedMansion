@@ -10,15 +10,17 @@ namespace HauntedMansion.Inventory.Items
     /// </summary>
     public class KeyItem : IItem
     {
+        public string ID { get; init; }
         public string Name { get; init; }
         public string Description { get; init; }
         public string KeyID { get; init; }
 
-        public KeyItem(string name, string description, string keyId)
-        {
-            Name = name;
-            Description = description;
-            KeyID = keyId;
+        public KeyItem(string id, string name, string description, string keyId) 
+        { 
+            ID = id; 
+            Name = name; 
+            Description = description; 
+            KeyID = keyId; 
         }
 
         /// <summary>

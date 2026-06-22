@@ -12,11 +12,12 @@ namespace HauntedMansion.UI
     /// </summary>
     public interface IRenderer
     {
-        void RenderRoom(IRoom room, Player player);
+        void RenderRoom(IRoom room, Player player, string description);
         void RenderCombat(CombatContext context);
         void RenderMenu(string title, List<string> options);
         void RenderDialogue(DialogueNode node);
         void RenderInventory(Player player);
+        void RenderEquipScreen(Player player);
         void RenderShop(List<(IItem item, int price)> stock, Player player);
         void RenderMessage(string message);
         
@@ -26,5 +27,7 @@ namespace HauntedMansion.UI
         void RenderSaveConfirmation();
         void RenderError(string message);
         void RenderInteractionResult(string message);
+
+        void ClearScreen();
     }
 }

@@ -30,5 +30,6 @@ namespace HauntedMansion.Interactions
 
         public string GetDescription() => _description;
         public string GetStartingNode() => _startingNodeId;
+        public string GetBaseTreeId() => _startingNodeId;
     }
 }

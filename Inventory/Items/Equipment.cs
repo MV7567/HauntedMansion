@@ -10,14 +10,16 @@ namespace HauntedMansion.Inventory.Items
     /// </summary>
     public class Equipment : IEquippable
     {
+        public string ID { get; init; }
         public string Name { get; init; }
         public string Description { get; init; }
         public EquipmentSlot Slot { get; init; }
         private StatModifier StatMods { get; init; }
 
-        public Equipment(string name, string description,
+        public Equipment(string id, string name, string description,
                          EquipmentSlot slot, StatModifier statMods)
         {
+            ID = id;
             Name = name;
             Description = description;
             Slot = slot;
@@ -38,12 +40,12 @@ namespace HauntedMansion.Inventory.Items
 
         public void Equip(Player player)
         {
-            // future: player.EquipmentSlots.Equip(this)
+            player.Equipment.Equip(this, player);
         }
 
         public void Unequip(Player player)
         {
-            // future: player.EquipmentSlots.Unequip(this.Slot)
+            player.Equipment.Unequip(this.Slot, player);
         }
     }
 }

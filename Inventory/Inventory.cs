@@ -64,7 +64,8 @@ namespace HauntedMansion.Inventory
         /// </summary>
         public bool HasKeyItem(string keyId)
         {
-            return _keyItems.Any(k => k.KeyID == keyId);
+            string cleanId = keyId.Replace("key:", "");
+            return _keyItems.Any(k => k.ID.Replace("key:", "").Equals(cleanId, StringComparison.OrdinalIgnoreCase));        
         }
     }
 }

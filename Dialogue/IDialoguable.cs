@@ -7,5 +7,6 @@
     public interface IDialoguable
     {
         string GetStartingNode();
+        string GetBaseTreeId();
     }
 }

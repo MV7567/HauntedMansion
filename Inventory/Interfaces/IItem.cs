@@ -7,6 +7,7 @@
     /// </summary>
     public interface IItem
     {
+        string ID { get; }
         string Name { get; }
         string Description { get; }
         bool Use(Entities.Player player);

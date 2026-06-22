@@ -1,4 +1,5 @@
-﻿using HauntedMansion.Entities;
+﻿using System;
+using HauntedMansion.Entities;
 using HauntedMansion.UI;
 using HauntedMansion.World;
 
@@ -12,6 +13,8 @@ namespace HauntedMansion.GameLoop
         public IInputProvider Input { get; }
 
         private IGameState _currentGameState;
+        private IGameState _nextState;
+        private bool _isRunning;
 
         public GameManager(Player player, Map map, IRenderer renderer, IInputProvider input)
         {
@@ -23,16 +26,32 @@ namespace HauntedMansion.GameLoop
 
         public void ChangeState(IGameState newState)
         {
-            _currentGameState?.OnExit();
-            _currentGameState = newState;
-            _currentGameState.OnEnter();
+            _nextState = newState;
         }
 
         public void Run(IGameState startingState)
         {
-            ChangeState(startingState);
+            _isRunning = true;
+            _nextState = startingState;
+
+            while (_isRunning)
+            {
+                if (_nextState != null)
+                {
+                    _currentGameState?.OnExit();
+                    _currentGameState = _nextState;
+                    _nextState = null;
+                    _currentGameState.OnEnter();
+                }
+
+                _currentGameState?.Update();
+            }
         }
         
-        public void Quit() => Environment.Exit(0);
+        public void Quit() 
+        {
+            _isRunning = false;
+            Environment.Exit(0);
+        }
     }
 }

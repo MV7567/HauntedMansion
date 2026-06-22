@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HauntedMansion.Combat;
+﻿using HauntedMansion.Combat;
 using HauntedMansion.Data;
 using HauntedMansion.Dialogue;
 using HauntedMansion.Entities;
@@ -28,40 +25,41 @@ namespace HauntedMansion.GameLoop
         public void OnEnter()
         {
             _manager.Renderer.RenderMessage("Combat begins!");
-            RunCombatLoop();
+            _manager.Input.WaitForContinue();
         }
 
         public void OnExit() { }
 
-        private void RunCombatLoop()
+        public void Update()
         {
-            while (true)
+            _manager.Renderer.ClearScreen();
+            _manager.Renderer.RenderCombat(_context);
+            
+            if (_context.Enemies.All(e => !e.IsAlive()))
             {
-                _manager.Renderer.RenderCombat(_context);
-                
-                if (_context.Enemies.All(e => !e.IsAlive()))
-                {
-                    _manager.Renderer.RenderMessage("All enemies defeated!");
-                    _manager.Input.WaitForContinue();
-                    _manager.ChangeState(new ExplorationGameState(_manager, _loader));
-                    return;
-                }
-                
-                if (!_manager.Player.IsAlive())
-                {
-                    _manager.Renderer.RenderMessage("You died!");
-                    _manager.Input.WaitForContinue();
-                    _manager.Quit();
-                    return;
-                }
-                
-                bool validAction = false;
-                while (!validAction) validAction = HandlePlayerTurn();
-                
-                foreach (var enemy in _context.Enemies.Where(e => e.IsAlive())) HandleEnemyTurn(enemy);
-
-                _context.TurnNumber++;
+                _manager.Renderer.RenderMessage("All enemies defeated!");
+                _manager.Input.WaitForContinue();
+                _manager.ChangeState(new ExplorationGameState(_manager, _loader));
+                return;
             }
+            
+            if (!_manager.Player.IsAlive())
+            {
+                _manager.Renderer.RenderMessage("You died!");
+                _manager.Input.WaitForContinue();
+                _manager.Quit();
+                return;
+            }
+            
+            bool validAction = false;
+            while (!validAction) validAction = HandlePlayerTurn();
+            
+            foreach (var enemy in _context.Enemies.Where(e => e.IsAlive())) HandleEnemyTurn(enemy);
+
+            _context.TurnNumber++;
+            
+            _manager.Renderer.RenderMessage("\nPress Enter to continue to next turn...");
+            _manager.Input.WaitForContinue();
         }
 
         private bool HandlePlayerTurn()
@@ -172,7 +170,7 @@ namespace HauntedMansion.GameLoop
 
             if (sparable == null)
             {
-                _manager.Renderer.RenderMessage("No enemy can be spared.");
+                _manager.Renderer.RenderMessage("No enemy can be spared right now.");
                 return false;
             }
 

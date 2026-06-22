@@ -34,9 +34,10 @@ var startingRoom = map.GetCurrentRoom();
 if (startingRoom != null)
 {
     renderer.RenderMessage(startingRoom.OnEnter(player));
+    input.WaitForContinue();
 }
 
-// Start game - GameManager to teraz tylko zarządca kontekstu
+// Start game
 var gameManager = new GameManager(player, map, renderer, input);
 var startingState = new ExplorationGameState(gameManager, loader);
 gameManager.Run(startingState);

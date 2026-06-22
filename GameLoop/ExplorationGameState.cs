@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HauntedMansion.Data;
+﻿using HauntedMansion.Data;
 using HauntedMansion.Dialogue;
 using HauntedMansion.Entities;
 using HauntedMansion.Interactions;
@@ -23,71 +20,65 @@ namespace HauntedMansion.GameLoop
             _dialogueEngine = new DialogueEngine(loader);
         }
 
-        public void OnEnter() => ShowExplorationMenu();
+        public void OnEnter() { }
         public void OnExit() { }
 
-        private void ShowExplorationMenu()
+        public void Update()
         {
-            while (true)
+            _manager.Renderer.ClearScreen();
+            var room = _manager.Map.GetCurrentRoom();
+            var descr = _loader.GetRoomDescription(room.GetRoomID());
+            
+            _manager.Renderer.RenderRoom(room, _manager.Player, descr);
+            
+            var neighbours = _manager.Map.GetNeighbours(room.GetRoomID());
+            var interactables = room.GetInteractables();
+            var enemies = room.GetEnemies();
+
+            var options = new List<string>();
+            var actions = new List<Action>();
+
+            // 1. Movement
+            foreach (var neighbour in neighbours)
             {
-                _manager.Renderer.ClearScreen();
-                var room = _manager.Map.GetCurrentRoom();
-                var descr = _loader.GetRoomDescription(room.GetRoomID());
-                
-                _manager.Renderer.RenderRoom(room, _manager.Player, descr);
-                
-                var neighbours = _manager.Map.GetNeighbours(room.GetRoomID());
-                var interactables = room.GetInteractables();
-                var enemies = room.GetEnemies();
-
-                var options = new List<string>();
-                var actions = new List<Action>();
-                bool stateChanged = false;
-
-                // 1. Movement
-                foreach (var neighbour in neighbours)
-                {
-                    var target = neighbour;
-                    options.Add($"Go to {target.GetRoomID().Replace('_', ' ')}");
-                    actions.Add(() => { HandleMovement(target); stateChanged = _manager.Map.GetCurrentRoom() != room; });
-                }
-                
-                // 2. Combat
-                if (enemies.Count > 0)
-                {
-                    options.Add($"Attack! ({enemies.Count} {(enemies.Count == 1 ? "enemy" : "enemies")} present)");
-                    actions.Add(() => { _manager.ChangeState(new CombatGameState(_manager, enemies, _loader)); stateChanged = true; });
-                }
-                
-                // 3. Interactions
-                foreach (var obj in interactables)
-                {
-                    var interactable = obj;
-                    options.Add($"Examine: {interactable.GetDescription()}");
-                    actions.Add(() => HandleInteraction(interactable));
-                }
-                
-                // 4. Always available
-                options.Add("Open inventory");
-                actions.Add(HandleInventory);
-                
-                options.Add("Save game");
-                actions.Add(() => {
-                    var msg = new SaveManager().SaveGame(_manager.Player, _manager.Map);
-                    _manager.Renderer.RenderMessage(msg);
-                    _manager.Input.WaitForContinue();
-                });
-                
-                options.Add("Quit");
-                actions.Add(_manager.Quit);
-                
-                _manager.Renderer.RenderMenu("What do you do?", options);
-                
-                int choice = _manager.Input.GetIntInput(1, options.Count);
-                actions[choice - 1].Invoke();
-                
-                if (stateChanged) return; // Exit this loop if state changed (e.g. Combat)
+                var target = neighbour;
+                options.Add($"Go to {target.GetRoomID().Replace('_', ' ')}");
+                actions.Add(() => HandleMovement(target));
             }
+            
+            // 2. Combat
+            if (enemies.Count > 0)
+            {
+                options.Add($"Attack! ({enemies.Count} {(enemies.Count == 1 ? "enemy" : "enemies")} present)");
+                actions.Add(() => _manager.ChangeState(new CombatGameState(_manager, enemies, _loader)));
+            }
+            
+            // 3. Interactions
+            foreach (var obj in interactables)
+            {
+                var interactable = obj;
+                options.Add($"Examine: {interactable.GetDescription()}");
+                actions.Add(() => HandleInteraction(interactable));
+            }
+            
+            // 4. Always available
+            options.Add("Open inventory");
+            actions.Add(HandleInventory);
+            
+            options.Add("Save game");
+            actions.Add(() => {
+                var msg = new UI.SaveManager().SaveGame(_manager.Player, _manager.Map);
+                _manager.Renderer.RenderMessage(msg);
+                _manager.Input.WaitForContinue();
+            });
+            
+            options.Add("Quit");
+            actions.Add(_manager.Quit);
+            
+            _manager.Renderer.RenderMenu("What do you do?", options);
+            
+            int choice = _manager.Input.GetIntInput(1, options.Count);
+            actions[choice - 1].Invoke();
         }
 
         private void HandleMovement(IRoom target)
@@ -109,6 +100,7 @@ namespace HauntedMansion.GameLoop
                 if (encountered != null)
                 {
                     _manager.Renderer.RenderMessage($"\nA {encountered.Name} appears!");
+                    _manager.Input.WaitForContinue();
                     _manager.ChangeState(new CombatGameState(_manager, new List<Enemy> { encountered }, _loader));
                     return;
                 }
@@ -117,6 +109,7 @@ namespace HauntedMansion.GameLoop
             _manager.Renderer.ClearScreen();
             var desc = newRoom.OnEnter(_manager.Player);
             _manager.Renderer.RenderMessage(desc);
+            _manager.Input.WaitForContinue(); // you can read the descr before menu displays
         }
 
         private void HandleInteraction(IInteractable interactable)
@@ -152,7 +145,11 @@ namespace HauntedMansion.GameLoop
         {
             _manager.Renderer.RenderEquipScreen(_manager.Player);
             var equippables = _manager.Player.PlayerInventory.GetEquippables();
-            if (equippables.Count == 0) return;
+            if (equippables.Count == 0)
+            {
+                _manager.Input.WaitForContinue();
+                return;
+            }
             
             var options = equippables.Select(e => $"{e.Name} [{e.Slot}]").ToList();
             options.Add("Cancel");
@@ -265,6 +262,7 @@ namespace HauntedMansion.GameLoop
             if (sellable.Count == 0)
             {
                 _manager.Renderer.RenderMessage("Nothing to sell.");
+                _manager.Input.WaitForContinue();
                 return;
             }
             

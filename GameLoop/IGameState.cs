@@ -4,5 +4,6 @@
     {
         void OnEnter();
         void OnExit();
+        void Update();
     }
 }

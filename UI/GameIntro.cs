@@ -1,6 +1,8 @@
 ﻿using HauntedMansion.Data;
 using HauntedMansion.Entities;
 using HauntedMansion.Core;
+using System;
+using System.Collections.Generic;
 
 namespace HauntedMansion.UI
 {
@@ -31,11 +33,8 @@ namespace HauntedMansion.UI
 
             int choice = _input.GetIntInput(1, options.Count);
             
-            // Quit
-            if (choice == options.Count)
-                Environment.Exit(0);
+            if (choice == options.Count) Environment.Exit(0);
             
-            // Load Game
             if (options.Count == 3 && choice == 2 && _saveManager.HasSaveFile())
             {
                 var (saveData, msg) = _saveManager.LoadGame();
@@ -57,7 +56,6 @@ namespace HauntedMansion.UI
                 }
             }
             
-            // New Game
             return (CreateNewPlayer(loader), "entrance_hall");
         }
 
@@ -76,7 +74,8 @@ namespace HauntedMansion.UI
             _renderer.RenderMessage($"\nYou open your eyes, {name}.");
             _renderer.RenderMessage("The air smells of dust and decay.");
             _renderer.RenderMessage("You are in a mansion. You don't know how you got here.");
-            _renderer.RenderMessage("\nPress Enter to continue...");
+            
+            _renderer.RenderContinuePrompt();
             _input.WaitForContinue();
 
             return player;

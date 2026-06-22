@@ -1,5 +1,4 @@
-﻿using System;
-using HauntedMansion.Entities;
+﻿using HauntedMansion.Entities;
 using HauntedMansion.UI;
 using HauntedMansion.World;
 
@@ -27,6 +26,12 @@ namespace HauntedMansion.GameLoop
         public void ChangeState(IGameState newState)
         {
             _nextState = newState;
+        }
+        
+        public void WaitToContinue()
+        {
+            Renderer.RenderContinuePrompt();
+            Input.WaitForContinue();
         }
 
         public void Run(IGameState startingState)

@@ -1,27 +1,24 @@
 {
-  "PlayerName": "K",
-  "CurrentHP": 99,
+  "PlayerName": "k",
+  "CurrentHP": 100,
   "Experience": 0,
-  "Money": 35,
-  "CurrentRoomId": "child_bedroom",
+  "Money": 25,
+  "CurrentRoomId": "study",
   "ClearedRooms": [
     "entrance_hall",
-    "child_bedroom",
-    "library",
     "study",
     "basement_stairs"
   ],
   "LootedRooms": [
-    "entrance_hall",
     "library",
     "study"
   ],
   "InventoryIds": [
     "healing_potion",
-    "healing_potion",
-    "key:old_key",
-    "equipment:magic_talisman",
-    "equipment:rusty_sword"
+    "key:teddy_bear"
   ],
-  "EquippedIds": {}
+  "EquippedIds": {
+    "Weapon": "equipment:rusty_sword",
+    "Talisman": "equipment:magic_talisman"
+  }
 }

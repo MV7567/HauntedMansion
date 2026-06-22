@@ -7,9 +7,6 @@ using HauntedMansion.World;
 
 namespace HauntedMansion.UI
 {
-    /// <summary>
-    /// Display logic, prints to the console
-    /// </summary>
     public interface IRenderer
     {
         void RenderRoom(IRoom room, Player player, string description);
@@ -28,6 +25,7 @@ namespace HauntedMansion.UI
         void RenderError(string message);
         void RenderInteractionResult(string message);
 
+        void RenderContinuePrompt();
         void ClearScreen();
     }
 }

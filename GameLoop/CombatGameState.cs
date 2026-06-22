@@ -25,7 +25,7 @@ namespace HauntedMansion.GameLoop
         public void OnEnter()
         {
             _manager.Renderer.RenderMessage("Combat begins!");
-            _manager.Input.WaitForContinue();
+            _manager.WaitToContinue();
         }
 
         public void OnExit() { }
@@ -38,7 +38,7 @@ namespace HauntedMansion.GameLoop
             if (_context.Enemies.All(e => !e.IsAlive()))
             {
                 _manager.Renderer.RenderMessage("All enemies defeated!");
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
                 _manager.ChangeState(new ExplorationGameState(_manager, _loader));
                 return;
             }
@@ -46,7 +46,7 @@ namespace HauntedMansion.GameLoop
             if (!_manager.Player.IsAlive())
             {
                 _manager.Renderer.RenderMessage("You died!");
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue(); 
                 _manager.Quit();
                 return;
             }
@@ -57,9 +57,7 @@ namespace HauntedMansion.GameLoop
             foreach (var enemy in _context.Enemies.Where(e => e.IsAlive())) HandleEnemyTurn(enemy);
 
             _context.TurnNumber++;
-            
-            _manager.Renderer.RenderMessage("\nPress Enter to continue to next turn...");
-            _manager.Input.WaitForContinue();
+            _manager.WaitToContinue(); 
         }
 
         private bool HandlePlayerTurn()
@@ -80,7 +78,7 @@ namespace HauntedMansion.GameLoop
                 _ => false
             };
 
-            if (!success) _manager.Input.WaitForContinue();
+            if (!success) _manager.WaitToContinue(); 
             return success;
         }
 
@@ -152,7 +150,7 @@ namespace HauntedMansion.GameLoop
                 _manager.Renderer.RenderDialogue(node);
                 if (node.Choices.Count == 0)
                 {
-                    _manager.Input.WaitForContinue();
+                    _manager.WaitToContinue();
                     break;
                 }
                 

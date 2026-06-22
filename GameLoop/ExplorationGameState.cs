@@ -38,7 +38,6 @@ namespace HauntedMansion.GameLoop
             var options = new List<string>();
             var actions = new List<Action>();
 
-            // 1. Movement
             foreach (var neighbour in neighbours)
             {
                 var target = neighbour;
@@ -46,14 +45,12 @@ namespace HauntedMansion.GameLoop
                 actions.Add(() => HandleMovement(target));
             }
             
-            // 2. Combat
             if (enemies.Count > 0)
             {
                 options.Add($"Attack! ({enemies.Count} {(enemies.Count == 1 ? "enemy" : "enemies")} present)");
                 actions.Add(() => _manager.ChangeState(new CombatGameState(_manager, enemies, _loader)));
             }
             
-            // 3. Interactions
             foreach (var obj in interactables)
             {
                 var interactable = obj;
@@ -61,7 +58,6 @@ namespace HauntedMansion.GameLoop
                 actions.Add(() => HandleInteraction(interactable));
             }
             
-            // 4. Always available
             options.Add("Open inventory");
             actions.Add(HandleInventory);
             
@@ -69,7 +65,7 @@ namespace HauntedMansion.GameLoop
             actions.Add(() => {
                 var msg = new UI.SaveManager().SaveGame(_manager.Player, _manager.Map);
                 _manager.Renderer.RenderMessage(msg);
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
             });
             
             options.Add("Quit");
@@ -87,20 +83,19 @@ namespace HauntedMansion.GameLoop
             if (!success)
             {
                 _manager.Renderer.RenderMessage(msg);
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
                 return;
             }
 
             var newRoom = _manager.Map.GetCurrentRoom();
             
-            // Random encounter check
             if (newRoom is Room concreteRoom)
             {
                 var encountered = concreteRoom.TryTriggerEncounter(_manager.Player);
                 if (encountered != null)
                 {
                     _manager.Renderer.RenderMessage($"\nA {encountered.Name} appears!");
-                    _manager.Input.WaitForContinue();
+                    _manager.WaitToContinue();
                     _manager.ChangeState(new CombatGameState(_manager, new List<Enemy> { encountered }, _loader));
                     return;
                 }
@@ -109,7 +104,7 @@ namespace HauntedMansion.GameLoop
             _manager.Renderer.ClearScreen();
             var desc = newRoom.OnEnter(_manager.Player);
             _manager.Renderer.RenderMessage(desc);
-            _manager.Input.WaitForContinue(); // you can read the descr before menu displays
+            _manager.WaitToContinue();
         }
 
         private void HandleInteraction(IInteractable interactable)
@@ -122,7 +117,7 @@ namespace HauntedMansion.GameLoop
             {
                 var result = interactable.Interact(_manager.Player);
                 _manager.Renderer.RenderInteractionResult(result);
-                if (!string.IsNullOrEmpty(result)) _manager.Input.WaitForContinue();
+                if (!string.IsNullOrEmpty(result)) _manager.WaitToContinue(); // ZMIANA
             }
         }
 
@@ -147,7 +142,7 @@ namespace HauntedMansion.GameLoop
             var equippables = _manager.Player.PlayerInventory.GetEquippables();
             if (equippables.Count == 0)
             {
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
                 return;
             }
             
@@ -170,7 +165,7 @@ namespace HauntedMansion.GameLoop
             _manager.Player.Equipment.Equip(item, _manager.Player);
             _manager.Player.PlayerInventory.RemoveItem(item);
             _manager.Renderer.RenderMessage($"Equipped: {item.Name}");
-            _manager.Input.WaitForContinue();
+            _manager.WaitToContinue();
         }
 
         private void HandleUseConsumable()
@@ -179,7 +174,7 @@ namespace HauntedMansion.GameLoop
             if (consumables.Count == 0)
             {
                 _manager.Renderer.RenderMessage("No consumables.");
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
                 return;
             }
             
@@ -197,7 +192,7 @@ namespace HauntedMansion.GameLoop
             
             _manager.Renderer.RenderMessage(healed > 0 ? $"Used {item.Name}. Restored {healed} HP." : $"Used {item.Name}.");
             if (consumed) _manager.Player.PlayerInventory.RemoveItem(item);
-            _manager.Input.WaitForContinue();
+            _manager.WaitToContinue();
         }
 
         private void HandleNPCDialogue(IDialoguable dialoguable)
@@ -211,7 +206,7 @@ namespace HauntedMansion.GameLoop
                 _manager.Renderer.RenderDialogue(node);
                 if (node.Choices.Count == 0) 
                 {
-                    _manager.Input.WaitForContinue();
+                    _manager.WaitToContinue();
                     break;
                 }
                 
@@ -221,7 +216,7 @@ namespace HauntedMansion.GameLoop
                 if (!string.IsNullOrEmpty(msg))
                 {
                     _manager.Renderer.RenderInteractionResult(msg);
-                    _manager.Input.WaitForContinue();
+                    _manager.WaitToContinue();
                 }
             }
             _dialogueEngine.EndConversation();
@@ -240,8 +235,8 @@ namespace HauntedMansion.GameLoop
                 int maxChoice = stock.Count + 2;
                 int choice = _manager.Input.GetIntInput(1, maxChoice);
                 
-                if (choice == maxChoice) break; // Leave
-                if (choice == maxChoice - 1)    // Sell
+                if (choice == maxChoice) break;
+                if (choice == maxChoice - 1)
                 {
                     HandleSellToShop(shop);
                     continue;
@@ -250,7 +245,7 @@ namespace HauntedMansion.GameLoop
                 var (item, message) = shop.Sell(choice - 1, _manager.Player);
                 _manager.Renderer.RenderMessage(message);
                 if (item != null) _manager.Player.PlayerInventory.AddItem(item);
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
             }
         }
 
@@ -262,7 +257,7 @@ namespace HauntedMansion.GameLoop
             if (sellable.Count == 0)
             {
                 _manager.Renderer.RenderMessage("Nothing to sell.");
-                _manager.Input.WaitForContinue();
+                _manager.WaitToContinue();
                 return;
             }
             
@@ -275,7 +270,7 @@ namespace HauntedMansion.GameLoop
             
             var msg = shop.BuyFromPlayer(sellable[choice - 1], _manager.Player);
             _manager.Renderer.RenderMessage(msg);
-            _manager.Input.WaitForContinue();
+            _manager.WaitToContinue();
         }
     }
 }

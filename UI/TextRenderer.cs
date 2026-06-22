@@ -229,6 +229,11 @@ namespace HauntedMansion.UI
                 Console.WriteLine($"\n  {message}");
         }
         
+        public void RenderContinuePrompt()
+        {
+            Console.WriteLine("\n  [Press Enter to continue...]");
+        }
+        
         public void ClearScreen()
         {
             Console.Clear();

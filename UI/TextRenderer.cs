@@ -144,5 +144,38 @@ namespace HauntedMansion.UI
         {
             Console.WriteLine($"\n  {message}");
         }
+        
+        public void RenderPassageBlocked(string message)
+        {
+            Console.WriteLine($"\n  [!] {message}");
+        }
+        
+        public void RenderCombatResult(CombatResult result)
+        {
+            Console.WriteLine(result.WasHit
+                ? $"\n  >> {result.Message}"
+                : $"\n  -- {result.Message}");
+        }
+        
+        public void RenderStateChange(string message)
+        {
+            Console.WriteLine($"\n  * {message}");
+        }
+        
+        public void RenderSaveConfirmation()
+        {
+            Console.WriteLine("\n  Game saved.");
+        }
+        
+        public void RenderError(string message)
+        {
+            Console.WriteLine($"\n  [ERROR] {message}");
+        }
+        
+        public void RenderInteractionResult(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+                Console.WriteLine($"\n  {message}");
+        }
     }
 }

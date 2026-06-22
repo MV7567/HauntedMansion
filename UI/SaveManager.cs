@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HauntedMansion.Core;
 using HauntedMansion.Entities;
 using HauntedMansion.World;
 
@@ -11,7 +12,7 @@ namespace HauntedMansion.UI
     {
         private const string SavePath = "save.json";
 
-        public void SaveGame(Player player, Map map)
+        public string SaveGame(Player player, Map map)
         {
             var saveData = new SaveData
             {
@@ -23,31 +24,33 @@ namespace HauntedMansion.UI
             };
             
             var json = JsonSerializer.Serialize(saveData,
-                new JsonSerializerOptions { WriteIndented =  true });
-            
+                new JsonSerializerOptions { WriteIndented = true });
+
             File.WriteAllText(SavePath, json);
-            Console.WriteLine("Game save.");
+            return "Game saved.";
         }
 
-        public SaveData LoadGame()
+        public (SaveData? data, string message) LoadGame()
         {
             if (!File.Exists(SavePath))
-            {
-                Console.WriteLine("No save file found.");
-                return null;
-            }
-            
+                return (null, "No save file found.");
+
             var json = File.ReadAllText(SavePath);
-            return JsonSerializer.Deserialize<SaveData>(json);
+            var data = JsonSerializer.Deserialize<SaveData>(json);
+            return data == null
+                ? (null, "Failed to load save file.")
+                : (data, "Game loaded.");
         }
+        
+        public bool HasSaveFile() => File.Exists(SavePath);
 
         public class SaveData
         {
-            public string PlayerName { get; set; }
+            public string? PlayerName { get; set; }
             public int CurrentHP { get; set; }
             public int Experience { get; set; }
             public int Money { get; set; }
-            public string CurrentRoomId { get; set; }
+            public string? CurrentRoomId { get; set; }
         }
     }
 }

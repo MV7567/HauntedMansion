@@ -1,9 +1,9 @@
 ﻿using HauntedMansion.Combat;
 using HauntedMansion.Dialogue;
 using HauntedMansion.Entities;
+using HauntedMansion.Inventory.Interfaces;
 using HauntedMansion.Shop;
 using HauntedMansion.World;
-using HauntedMansion.Inventory.Interfaces;
 
 namespace HauntedMansion.UI
 {
@@ -19,5 +19,12 @@ namespace HauntedMansion.UI
         void RenderInventory(Player player);
         void RenderShop(List<(IItem item, int price)> stock, Player player);
         void RenderMessage(string message);
+        
+        void RenderPassageBlocked(string message);
+        void RenderCombatResult(CombatResult result);
+        void RenderStateChange(string message);
+        void RenderSaveConfirmation();
+        void RenderError(string message);
+        void RenderInteractionResult(string message);
     }
 }

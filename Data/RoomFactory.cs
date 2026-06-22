@@ -1,71 +1,73 @@
-﻿using HauntedMansion.World;
-using HauntedMansion.Entities;
+﻿using HauntedMansion.Entities;
+using HauntedMansion.World;
 
 namespace HauntedMansion.Data
 {
     /// <summary>
-    /// Makes room instances with enemies and interactables
-    /// uses enemy factory internally for enemy creation
+    /// Builds Room instances from JSON data.
+    /// Delegates enemy creation to EnemyFactory,
+    /// interactable creation to InteractableFactory.
+    /// Adding a new room requires only a JSON entry (OCP).
     /// </summary>
     public class RoomFactory
     {
         private readonly IContentLoader _loader;
         private readonly EnemyFactory _enemyFactory;
+        private readonly InteractableFactory _interactableFactory;
 
         public RoomFactory(IContentLoader loader)
         {
             _loader = loader;
             _enemyFactory = new EnemyFactory(loader);
+            var itemFactory = new ItemFactory(loader);
+            _interactableFactory = new InteractableFactory(loader, itemFactory);
         }
 
         /// <summary>
         /// create a fully configured room by ID
         /// </summary>
-        public Room CreateRoom(string roomId)
+        public Room? CreateRoom(string roomId)
         {
             var data = _loader.GetRoomData(roomId);
-            if (data == null)
-            {
-                Console.WriteLine($"[RoomFactory] Unknown room: {roomId}");
-                return null;
-            }
-
-            // Build normal enemies
+            if (data == null) return null;
+            
             var normalEnemies = data.Enemies
                 .Select(id => _enemyFactory.CreateEnemy(id) as NormalEnemy)
                 .Where(e => e != null)
+                .Cast<NormalEnemy>()
                 .ToList();
-
-            // Build boss if present
-            BossEnemy boss = null;
+            
+            BossEnemy? boss = null;
             if (!string.IsNullOrEmpty(data.Boss))
                 boss = _enemyFactory.CreateEnemy(data.Boss) as BossEnemy;
-
-            return new Room(roomId, normalEnemies, boss, _loader);
+            
+            var room = new Room(roomId, normalEnemies, boss, _loader);
+            
+            foreach (var interactable in _interactableFactory.CreateForRoom(roomId))
+                room.AddInteractable(interactable);
+            
+            return room;
         }
 
         /// <summary>
-        /// Builds the entire map from rooms.json.
-        /// Creates all rooms and connects them based on connections field.
-        /// Call this instead of creating rooms manually
+        /// Builds entire map from rooms.json.
+        /// Creates all rooms and connects them automatically.
         /// </summary>
-
         public Map BuildMap(string startingRoomId)
         {
             var map = new Map();
-            var allRoomIds = GetAllRoomIds();
-
+            
             // 1. create all rooms
-            foreach (var roomId in allRoomIds)
+            foreach (var roomId in _loader.GetAllRoomIds())
             {
                 var room = CreateRoom(roomId);
                 if (room != null)
                     map.AddRoom(room);
             }
-
+            
             // 2. connect rooms
             var connected = new HashSet<string>();
-            foreach (var roomId in allRoomIds)
+            foreach (var roomId in _loader.GetAllRoomIds())
             {
                 var data = _loader.GetRoomData(roomId);
                 if (data?.Connections == null) continue;
@@ -80,22 +82,8 @@ namespace HauntedMansion.Data
                         map.ConnectRooms(roomId, neighbourId);
                 }
             }
-
             map.SetStartingRoom(startingRoomId);
             return map;
-        }
-
-        private List<string> GetAllRoomIds()
-        {
-            // future: IContentLoader could expose a GetAllRoomIds() method
-            // for now hardcode known room IDs
-            return new List<string>
-            {
-                "entrance_hall",
-                "kitchen",
-                "child_bedroom",
-                "library"
-            };
         }
     }
 }

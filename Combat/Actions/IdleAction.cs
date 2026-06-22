@@ -14,9 +14,14 @@ namespace HauntedMansion.Combat.Actions
             _message = message;
         }
         
-        public void Execute(CombatContext context)
+        public CombatResult? Execute(CombatContext? context)
         {
-            Console.WriteLine(_message);
+            return new CombatResult
+            {
+                WasHit = false,
+                DamageDealt = 0,
+                Message = _message
+            };
         }
     }
 }

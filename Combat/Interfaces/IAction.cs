@@ -6,6 +6,6 @@
     /// </summary>
     public interface IAction
     {
-        void Execute(CombatContext context);
+        CombatResult? Execute(CombatContext? context);
     }
 }

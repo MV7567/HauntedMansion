@@ -7,6 +7,10 @@ namespace HauntedMansion.World
     /// </summary>
     public class Map
     {
+        public enum PassageBlockReason { None, Locked, Blocked, RequiresItem }
+        private Dictionary<string, PassageBlockReason> _lockedPassages = new();
+        private Dictionary<string, string> _passageMessages = new();
+        
         // all rooms keyed by RoomID
         private readonly Dictionary<string, IRoom> _rooms = new();
         
@@ -14,7 +18,7 @@ namespace HauntedMansion.World
         private readonly Dictionary<string, List<string>> _connections = new();
         
         // room locked until condition is met
-        private readonly HashSet<string> _lockedPassages = new();
+       // private readonly HashSet<string> _lockedPassages = new();
 
         private IRoom _currentRoom;
 
@@ -42,9 +46,30 @@ namespace HauntedMansion.World
         /// <summary>
         ///  locks/unlocks passages, by dialogue choices and/or key item interactions
         /// </summary>
-        public void LockPassage(string fromId, string toId)
+        public void LockPassage(string fromId, string toId, 
+            PassageBlockReason reason, string customMessage = null)
         {
-            _lockedPassages.Add($"{fromId}:{toId}");
+            string key = $"{fromId}:{toId}";
+            _lockedPassages[key] = reason;
+            if (customMessage != null)
+                _passageMessages[key] = customMessage;
+        }
+        
+        public string GetBlockedMessage(string fromId, string toId)
+        {
+            string key = $"{fromId}:{toId}";
+            if (_passageMessages.TryGetValue(key, out var msg)) return msg;
+    
+            var reason = _lockedPassages.TryGetValue(key, out var r) 
+                ? r : PassageBlockReason.Blocked;
+    
+            return reason switch
+            {
+                PassageBlockReason.Locked  => "The door is locked.",
+                PassageBlockReason.Blocked => "Something is blocking the door from the other side.",
+                PassageBlockReason.RequiresItem => "You need something to open this.",
+                _ => "The way is blocked."
+            };
         }
 
         public void UnlockPassage(string fromId, string toId)
@@ -79,7 +104,7 @@ namespace HauntedMansion.World
         {
             if (!_connections.ContainsKey(fromId)) return false;
             if (!_connections[fromId].Contains(toId)) return false;
-            if (_lockedPassages.Contains($"{fromId}:{toId}")) return false;
+            if (_lockedPassages.ContainsKey($"{fromId}:{toId}")) return false;
             return true;
         }
 
@@ -87,25 +112,19 @@ namespace HauntedMansion.World
         /// allows passage, moves player to room, updates current room
         /// calls room.OnEnter(player), returns false if passage is blocked
         /// </summary>
-        public bool MoveToRoom(string roomId, Player player)
+        public (bool success, string message) MoveToRoom(string roomId, Player player)
         {
             string currentId = _currentRoom?.GetRoomID();
 
             if (currentId != null && !IsPassable(currentId, roomId))
-            {
-                Console.WriteLine("The way is blocked.");
-                return false;
-            }
+                return (false, GetBlockedMessage(currentId, roomId));
 
             if (!_rooms.ContainsKey(roomId))
-            {
-                Console.WriteLine($"Room '{roomId}' does not exist.");
-                return false;
-            }
+                return (false, $"[ERROR] Room '{roomId}' does not exist.");
 
             _currentRoom = _rooms[roomId];
-            _currentRoom.OnEnter(player);
-            return true;
+            string description = _currentRoom.OnEnter(player);
+            return (true, description);
         }
 
         /// <summary>

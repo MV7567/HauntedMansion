@@ -2,6 +2,7 @@
 using System.Linq;
 using HauntedMansion.Core;
 using HauntedMansion.Combat;
+using HauntedMansion.Combat.Actions;
 using HauntedMansion.Combat.Interfaces;
 
 namespace HauntedMansion.Entities;
@@ -73,6 +74,15 @@ public abstract class Enemy : Entity
         CurrentState = state;
         CurrentState?.OnEnter(this);
     }
+    
+    // New version that returns messages:
+    public (string exitMsg, string enterMsg) SetStateWithMessages(ICombatState state)
+    {
+        string exitMsg = CurrentState?.OnExit(this) ?? string.Empty;
+        CurrentState = state;
+        string enterMsg = CurrentState?.OnEnter(this) ?? string.Empty;
+        return (exitMsg, enterMsg);
+    }
 
     public IAction GetAction(CombatContext context)
     {
@@ -82,5 +92,14 @@ public abstract class Enemy : Entity
         
         // Fall back to AI if state returns null
         return AI?.ChooseAction(this, context);
+    }
+    
+    /// <summary>
+    /// Returns true if enemy is in SparableState.
+    /// Avoids calling GetAction() as a side-effect check.
+    /// </summary>
+    public bool IsSparable(CombatContext context)
+    {
+        return GetAction(context) is IdleAction;
     }
 }

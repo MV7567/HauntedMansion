@@ -12,10 +12,10 @@ namespace HauntedMansion.Combat.States
         private const int AttackPenalty = -3;
         private const int SpeedPenalty = -3;
 
-        public void OnEnter(Enemy enemy)
+        public string OnEnter(Enemy enemy)
         {
             enemy.ApplyStateMod(attack: AttackPenalty, speed: SpeedPenalty);
-            Console.WriteLine($"{enemy.Name} looks weakened...");
+            return $"{enemy.Name} looks weakened...";
         }
 
         public IAction Execute(Enemy enemy, CombatContext context)
@@ -26,9 +26,10 @@ namespace HauntedMansion.Combat.States
             return null;
         }
 
-        public void OnExit(Enemy enemy)
+        public string OnExit(Enemy enemy)
         {
             enemy.ResetStateMod();
+            return string.Empty;
         }
     }
 }

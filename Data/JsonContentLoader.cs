@@ -13,6 +13,10 @@ namespace HauntedMansion.Data
         private Dictionary<string, string> _dialogueLines = new();
         private Dictionary<string, EnemyData> _enemyData = new();
         private Dictionary<string, RoomData> _roomData = new();
+        private Dictionary<string, List<InteractableData>> _interactableData = new();
+
+        
+        private JsonContentLoader.StatsData _playerDefaultStats;
         
         /// <summary>
         /// Load all files from the given directory
@@ -25,6 +29,8 @@ namespace HauntedMansion.Data
             LoadDialogue(Path.Combine(path, "dialogue.json"));
             LoadItems(Path.Combine(path, "items.json"));
             LoadEnemies(Path.Combine(path, "enemies.json"));
+            LoadInteractables(Path.Combine(path, "interactables.json"));
+
         }
 
         private void LoadRooms(string filePath)
@@ -76,6 +82,22 @@ namespace HauntedMansion.Data
             _enemyData = JsonSerializer.Deserialize
                 <Dictionary<string, EnemyData>>(json) ?? new();
         }
+        
+        private void LoadPlayer(string filePath)
+        {
+            if (!File.Exists(filePath)) return;
+            var json = File.ReadAllText(filePath);
+            var data = JsonSerializer.Deserialize<PlayerFileData>(json);
+            _playerDefaultStats = data?.DefaultStats;
+        }
+        
+        private void LoadInteractables(string filePath)
+        {
+            if (!File.Exists(filePath)) return;
+            var json = File.ReadAllText(filePath);
+            _interactableData = JsonSerializer.Deserialize
+                <Dictionary<string, List<InteractableData>>>(json) ?? new();
+        }
 
         public string GetRoomDescription(string roomId) =>
             _roomDescriptions.TryGetValue(roomId, out var desc)
@@ -102,8 +124,15 @@ namespace HauntedMansion.Data
 
         public RoomData? GetRoomData(string roomId) =>
             _roomData.TryGetValue(roomId, out var d) ? d : null;
+        
+        public List<InteractableData> GetInteractables(string roomId) =>
+            _interactableData.TryGetValue(roomId, out var data) ? data : new();
 
         public List<string> GetAllRoomIds() => _roomData.Keys.ToList();
+        
+        public StatsData GetPlayerDefaultStats() => 
+            _playerDefaultStats ?? new StatsData 
+                { Attack=10, Defence=10, Magic=10, Speed=10, Accuracy=75, MaxHP=100 };
      
         
         
@@ -155,6 +184,28 @@ namespace HauntedMansion.Data
             public List<string> Enemies { get; set; } = new();
             public string? Boss { get; set; }
             public List<string> Connections { get; set; } = new();
+        }
+        
+        private class PlayerFileData
+        {
+            public StatsData? DefaultStats { get; set; }
+        }
+        
+        public class InteractableData
+        {
+            public string? Type { get; set; }
+            public string? Description { get; set; }
+            public List<string> Items { get; set; } = new();
+            public int Money { get; set; }
+            public int Damage { get; set; }
+            public string? NpcName { get; set; }
+            public List<ShopStockData> Stock { get; set; } = new();
+        }
+        
+        public class ShopStockData
+        {
+            public string? Item { get; set; }
+            public int Price { get; set; }
         }
     }
 }

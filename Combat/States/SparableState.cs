@@ -7,9 +7,9 @@ namespace HauntedMansion.Combat.States
     // Enemy has been appeased through dialogue or items
     public class SparableState : ICombatState
     {
-        public void OnEnter(Enemy enemy)
+        public string OnEnter(Enemy enemy)
         {
-            Console.WriteLine($"{enemy.Name} calms down. You can spare them.");
+            return $"{enemy.Name} calms down. You can spare them.";
         }
 
         public IAction Execute(Enemy enemy, CombatContext context)
@@ -18,6 +18,6 @@ namespace HauntedMansion.Combat.States
             return new IdleAction($"{enemy.Name} doesn't attack.");
         }
         
-        public void OnExit(Enemy enemy) {}
+        public string OnExit(Enemy enemy) => string.Empty;
     }
 }

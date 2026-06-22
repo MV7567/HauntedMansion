@@ -28,35 +28,28 @@ namespace HauntedMansion.Shop
         /// <summary>
         /// validates player selected index and funds, deducts price from money, adds item to inventory
         /// </summary>
-        public IItem Sell(int selection, Player player)
+        public (IItem? item, string message) Sell(int selection, Player player)
         {
             if (selection < 0 || selection >= _inventory.Count)
-            {
-                Console.WriteLine("Invalid selection.");
-                return null;
-            }
+                return (null, "Invalid selection.");
 
             var item = _inventory[selection];
             int price = _prices[item];
 
             if (player.Money < price)
-            {
-                Console.WriteLine($"Not enough money. {item.Name} costs {price}.");
-                return null;
-            }
+                return (null, $"Not enough money. {item.Name} costs {price} coins.");
             
             player.AddMoney(-price);
             _inventory.Remove(item);
             _prices.Remove(item);
             
-            Console.WriteLine($"Bought {item.Name} for {price} coins.");
-            return item;
+            return (item, $"Bought {item.Name} for {price} coins.");
         }
 
         /// <summary>
         /// buy item from player at a reduced rate, removes item form player inventory, adds money
         /// </summary>
-        public void BuyFromPlayer(IItem item, Player player)
+        public string BuyFromPlayer(IItem item, Player player)
         {
             int basePrice = _prices.TryGetValue(item, out int p) ? p : 10;
             int buyBackPrice = (int)(basePrice * BuyBackRate);
@@ -68,13 +61,10 @@ namespace HauntedMansion.Shop
             _inventory.Add(item);
             _prices[item] = basePrice;
             
-            Console.WriteLine($"Sold {item.Name} for {buyBackPrice} coins.");
+            return $"Sold {item.Name} for {buyBackPrice} coins.";
         }
 
-        public List<(IItem item, int price)> GetStock()
-        {
-            return _inventory.Select(item => (item, _prices[item])).ToList();
-
-        }
+        public List<(IItem item, int price)> GetStock() =>
+            _inventory.Select(item => (item, _prices[item])).ToList();
     }
 }

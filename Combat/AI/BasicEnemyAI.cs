@@ -11,10 +11,14 @@ namespace HauntedMansion.Combat.AI
     public class BasicEnemyAI : IEnemyAi
     {
         private readonly CombatEngine _engine = new();
+        private readonly Random _rng = new();
         
         public IAction ChooseAction(Enemy enemy, CombatContext context)
         {
-            return new AttackAction(enemy, _engine, AttackType.Physical);
+            var type = _rng.NextDouble() < 0.5 
+                ? AttackType.Physical 
+                : AttackType.Magical;
+            return new AttackAction(enemy, _engine, type);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace HauntedMansion.Combat.Interfaces
     public interface ICombatState
     {
         IAction Execute(Enemy enemy, CombatContext context);
-        void OnEnter(Enemy enemy);
-        void OnExit(Enemy enemy);
+        string OnEnter(Enemy enemy);  // returns message for renderer
+        string OnExit(Enemy enemy);   // returns message for renderer
     }
 }

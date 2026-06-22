@@ -11,9 +11,10 @@ namespace HauntedMansion.Dialogue
         public string NextNodeID { get; init; }
         
         /// <summary>
-        /// optional command when player picks this choice (eg unlock door, get item etc)
-        /// null is display only, no game effect
+        /// Optional action executed when this choice is selected.
+        /// e.g. SetStateDialogueAction, GrantItemDialogueAction.
+        /// Null means no game effect.
         /// </summary>
-        public ICommand Action { get; init; }
+        public IDialogueAction? Action { get; init; }
     }
 }

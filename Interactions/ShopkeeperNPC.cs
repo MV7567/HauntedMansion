@@ -18,15 +18,16 @@ namespace HauntedMansion.Interactions
             _shopModule = shopModule;
         }
 
-        public void Interact(Player player)
+        public string Interact(Player player)
         {
-            // future: open shop UI via IRenderer
-            Console.WriteLine($"{Name}: Welcome! What are you buying?");
+            // Returns signal string - ExplorationGameState checks
+            // if interactable is ShopkeeperNPC and opens shop UI
+            return $"OPEN_SHOP:{Name}";
         }
 
-        public string GetDescription()
-        {
-            return $"{Name} is here. Talk to them to buy stuff.";
-        }
+        public string GetDescription() =>
+            $"{Name} is here. Talk to them to open the shop.";
+        
+        public IShop GetShop() => _shopModule;
     }
 }

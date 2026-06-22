@@ -13,17 +13,23 @@ namespace HauntedMansion.UI.Commands
         private readonly string _targetRoomId;
         private readonly Map _map;
         private readonly Player _player;
+        private readonly IRenderer _renderer;
 
-        public MoveCommand(string targetRoomId, Map map, Player player)
+        public MoveCommand(string targetRoomId, Map map, Player player, IRenderer renderer)
         {
             _targetRoomId = targetRoomId;
             _map = map;
             _player = player;
+            _renderer = renderer;
         }
 
-        public void Execute(CombatContext context = null)
+        public void Execute(CombatContext? context = null)
         {
-            _map.MoveToRoom(_targetRoomId, _player);
+            var (success, message) = _map.MoveToRoom(_targetRoomId, _player);
+            if (!success)
+                _renderer.RenderPassageBlocked(message);
+            else if (!string.IsNullOrEmpty(message))
+                _renderer.RenderMessage(message);
         }
     }
 }

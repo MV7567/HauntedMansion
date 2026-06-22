@@ -20,11 +20,10 @@ namespace HauntedMansion.Combat.Actions
             _type = type;
         }
 
-        public void Execute(CombatContext context)
+        public CombatResult? Execute(CombatContext? context)
         {
-            var result = _engine.ExecuteAttack(
-                _attacker, context.Player, _type);
-            Console.WriteLine(result.Message);
+            if (context == null) return null;
+            return _engine.ExecuteAttack(_attacker, context.Player, _type);
         }
     }
 }

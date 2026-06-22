@@ -13,5 +13,7 @@
         List<string> GetAllRoomIds();
         JsonContentLoader.EnemyData? GetEnemyData(string enemyId);
         JsonContentLoader.RoomData? GetRoomData(string roomId);
+        JsonContentLoader.StatsData GetPlayerDefaultStats();
+        List<JsonContentLoader.InteractableData> GetInteractables(string roomId);
     }
 }

@@ -17,28 +17,21 @@ namespace HauntedMansion.Interactions
         {
             _description = description;
             _damageAmount = damageAmount;
-            _isTriggered = false;
         }
 
-        public void Interact(Player player)
+        public string Interact(Player player)
         {
             if (_isTriggered)
-            {
-                Console.WriteLine("The trap has already been triggered.");
-                return;
-            }
+                return "The trap has already been triggered.";
             
             player.TakeDamage(_damageAmount);
-            _isTriggered = true; 
-            Console.WriteLine($"A trap! You took {_damageAmount} damage!");
-            
-            if (!player.IsAlive())
-                Console.WriteLine("You died...");
-        }
+            _isTriggered = true;
 
-        public string GetDescription()
-        {
-            return _isTriggered ? "A disarmed trap." : _description;
+            return !player.IsAlive()
+                ? $"A trap! You took {_damageAmount} damage! You died..."
+                : $"A trap! You took {_damageAmount} damage!";
         }
+        public string GetDescription() =>
+            _isTriggered ? "A disarmed trap." : _description;
     }
 }

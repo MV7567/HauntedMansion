@@ -1,24 +1,72 @@
 {
   "ghost_child": {
     "lines": [
-      "Have you seen my toy?",
-      "Get out of my room!",
-      "...you found it. Thank you."
+      "Have you seen my teddy bear? I can't sleep without it...",
+      "Please... bring it back to me.",
+      "I'll leave you alone if you find it. I promise."
     ],
     "lineMap": {
-      "ghost_child_greet": "Have you seen my toy?",
+      "ghost_child_greet": "Have you seen my teddy bear?",
       "ghost_child_angry": "Get out of my room!",
-      "ghost_child_appeased": "...you found it. Thank you."
+      "ghost_child_appeased": "...you found it. Thank you. I can rest now."
     }
   },
   "rat_chef": {
     "lines": [
-      "MY kitchen! Get out!",
-      "...you think my cooking smells good?"
+      "MY kitchen! Nobody enters MY kitchen!",
+      "You dare interrupt my cooking?",
+      "Leave now or become an ingredient!"
     ],
     "lineMap": {
-      "rat_chef_greet": "MY kitchen! Get out!",
-      "rat_chef_appeased": "...you think my cooking smells good?"
+      "rat_chef_greet": "MY kitchen! Nobody enters MY kitchen!",
+      "rat_chef_angry": "You dare interrupt my cooking?",
+      "rat_chef_appeased": "...you think my cooking smells good? Perhaps you can stay."
+    }
+  },
+  "living_armor": {
+    "lines": [
+      "...",
+      "......",
+      "...leave."
+    ],
+    "lineMap": {
+      "living_armor_greet": "...",
+      "living_armor_angry": "......",
+      "living_armor_leave": "...leave."
+    }
+  },
+  "cursed_rat": {
+    "lines": [
+      "SQUEAK!",
+      "SQUEAK SQUEAK!!"
+    ],
+    "lineMap": {
+      "cursed_rat_greet": "SQUEAK!",
+      "cursed_rat_angry": "SQUEAK SQUEAK!!"
+    }
+  },
+  "mirror_ghost": {
+    "lines": [
+      "You look just like me. How interesting.",
+      "Tell me... do you remember how you got here?",
+      "I don't think you're going to leave. I never did."
+    ],
+    "lineMap": {
+      "mirror_ghost_greet": "You look just like me. How interesting.",
+      "mirror_ghost_taunt": "Tell me... do you remember how you got here?",
+      "mirror_ghost_reveal": "I don't think you're going to leave. I never did."
+    }
+  },
+  "shop_cat": {
+    "lines": [
+      "Mrrrow. You look terrible.",
+      "I have things you might need. Or might not. I don't particularly care.",
+      "Buy something or don't. It's all the same to me."
+    ],
+    "lineMap": {
+      "shop_cat_greet": "Mrrrow. You look terrible.",
+      "shop_cat_sell": "Fine. Take it.",
+      "shop_cat_buy": "Interesting choice."
     }
   }
 }

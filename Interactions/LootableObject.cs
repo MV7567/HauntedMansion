@@ -19,37 +19,42 @@ namespace HauntedMansion.Interactions
             _description = description;
             _containedItems = items ?? new List<IItem>();
             _containedMoney = money;
-            _isLooted = false;
         }
 
-        public void Interact(Player player)
+        /// <summary>
+        /// Transfers contents to player. Returns message for IRenderer.
+        /// </summary>
+        public string Interact(Player player)
         {
             if (_isLooted)
             {
-                Console.WriteLine("There's nothing left here.");
-                return;
+                return "There's nothing left here.";;
             }
 
             if (_containedItems.Count == 0 && _containedMoney == 0)
             {
-                Console.WriteLine("It's empty.");
                 _isLooted = true;
-                return;
+                return "It's empty.";
             }
+            
+            var messages = new List<string>();
             
             // transfer item to player inventory
             foreach (var item in _containedItems)
             {
                 player.PlayerInventory.AddItem(item);
-                Console.WriteLine($"Found {_containedMoney} coins.");
+                messages.Add($"Found: {item.Name}");
             }
-
+            
+            if (_containedMoney > 0)
+            {
+                player.AddMoney(_containedMoney);
+                messages.Add($"Found {_containedMoney} coins.");
+            }
             _isLooted = true;
+            return string.Join("\n", messages);
         }
-
-        public string GetDescription()
-        {
-            return _isLooted ? $"{_description} (empty)" : _description;
-        }
+        public string GetDescription() =>
+            _isLooted ? $"{_description} (empty)" : _description;
     }
 }

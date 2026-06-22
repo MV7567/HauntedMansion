@@ -11,7 +11,7 @@ namespace HauntedMansion.World
         string GetRoomID();
         List<IInteractable> GetInteractables();
         List<Enemy> GetEnemies();
-        void OnEnter(Player player);
+        string OnEnter(Player player);
 
     }
 }

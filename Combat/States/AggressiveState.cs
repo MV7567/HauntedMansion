@@ -13,10 +13,10 @@ namespace HauntedMansion.Combat.States
         private const int AccuracyDrop = -15;
         private readonly CombatEngine _engine = new();
         
-        public void OnEnter(Enemy enemy)
+        public string OnEnter(Enemy enemy)
         {
             enemy.ApplyStateMod(attack: AttackBonus, accuracy: AccuracyDrop);
-            Console.WriteLine($"{enemy.Name} becomes aggressive!");
+            return $"{enemy.Name} becomes aggressive!";
         }
 
         public IAction Execute(Enemy enemy, CombatContext context)
@@ -25,9 +25,10 @@ namespace HauntedMansion.Combat.States
             return new AttackAction(enemy, _engine, AttackType.Physical);
         }
 
-        public void OnExit(Enemy enemy)
+        public string OnExit(Enemy enemy)
         {
             enemy.ResetStateMod();
+            return string.Empty;
         }
     }
 }

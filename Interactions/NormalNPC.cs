@@ -21,10 +21,11 @@ namespace HauntedMansion.Interactions
             _startingNodeId = startingNodeId;
         }
 
-        public void Interact(Player player)
+        public string Interact(Player player)
         {
-            //future: DialogueEngine.StartConversation(this)
-            Console.WriteLine($"{Name}: ...");
+            // Returns empty - ExplorationGameState checks if
+            // interactable is IDialoguable and starts DialogueEngine
+            return string.Empty;
         }
 
         public string GetDescription() => _description;

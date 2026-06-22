@@ -122,13 +122,12 @@ namespace HauntedMansion.GameLoop
                 eChoice < 1 || eChoice > enemies.Count) return false;
 
             var target = enemies[eChoice - 1];
-            
-            // Select body part
+
             var partOptions = Enum.GetValues(typeof(BodyPartType))
                 .Cast<BodyPartType>()
                 .Select(p => p.ToString())
                 .ToList();
-            
+
             _manager.Renderer.RenderMenu("Target body part:", partOptions);
 
             if (!int.TryParse(Console.ReadLine(), out int pChoice) ||
@@ -139,13 +138,13 @@ namespace HauntedMansion.GameLoop
 
             if (part == null)
             {
-                _manager.Renderer.RenderMessage("Invalid body part.");
+                _manager.Renderer.RenderError("Invalid body part.");
                 return false;
             }
 
-            var result = _combatEngine.ExecuteAttack(_manager.Player, target, type, part);
-            
-            _manager.Renderer.RenderMessage(result.Message);
+            var result = _combatEngine.ExecuteAttack(
+                _manager.Player, target, type, part);
+            _manager.Renderer.RenderCombatResult(result);
             return true;
         }
 
@@ -189,42 +188,50 @@ namespace HauntedMansion.GameLoop
 
             while (_dialogueEngine.IsActive)
             {
-                var choices = _dialogueEngine.GetCurrentChoices();
-                if (choices.Count == 0) break;
+                var node = _dialogueEngine.CurrentNode;
+                if (node == null) break;
                 
-                var options = choices.Select(c => c.Text).ToList();
-                _manager.Renderer.RenderMenu("Say:", options);
+                _manager.Renderer.RenderDialogue(node);
+                
+                if (node.Choices.Count == 0) break;
                 
                 if (!int.TryParse(Console.ReadLine(), out int choice) ||
-                    choice < 1 || choice > choices.Count)
+                    choice < 1 || choice > node.Choices.Count)
                 {
                     _manager.Renderer.RenderMessage("Invalid choice.");
                     continue;
                 }
-                _dialogueEngine.SelectChoice(choice - 1, _manager.Player, _context);
+                
+                var msg = _dialogueEngine.SelectChoice(
+                    choice - 1, _manager.Player, _context);
+                
+                if (!string.IsNullOrEmpty(msg))
+                    _manager.Renderer.RenderStateChange(msg);
             }
+            _dialogueEngine.EndConversation();
             return true;
         }
 
         private bool HandleSpare(List<Enemy> enemies)
         {
-            // Only enemies in SparableState can be spared
             var sparable = enemies
                 .Where(e => e.IsAlive())
-                .FirstOrDefault(e => e.GetAction(_context) is IdleAction);
-            
+                .FirstOrDefault(e => e.IsSparable(_context));
+
             if (sparable == null)
             {
-                _manager.Renderer.RenderMessage("No enemy can be spared.");
+                _manager.Renderer.RenderMessage(
+                    "No enemy can be spared.");
                 return false;
             }
-            
+
             if (sparable is NormalEnemy normal)
                 normal.MarkDefeated();
             else if (sparable is BossEnemy boss)
                 boss.BecomeNPC();
-            
-            _manager.Renderer.RenderMessage($"{sparable.Name} has been spared.");
+
+            _manager.Renderer.RenderStateChange(
+                $"{sparable.Name} has been spared.");
             _context.Enemies.Remove(sparable);
             return true;
         }
@@ -232,7 +239,10 @@ namespace HauntedMansion.GameLoop
         private void HandleEnemyTurn(Enemy enemy)
         {
             var action = enemy.GetAction(_context);
-            action?.Execute(_context);
+            if (action == null) return;
+
+            var result = action.Execute(_context);
+            _manager.Renderer.RenderCombatResult(result);
         }
     }
 }

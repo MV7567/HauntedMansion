@@ -9,17 +9,12 @@ namespace HauntedMansion.Shop
     /// </summary>
     public interface IShop
     {
-        /// <summary>
-        /// Sells item at specific index to player
-        /// returns null if insuffiecient funds or wrong selection
-        /// </summary>
-        IItem Sell(int selection, Player player);
+        // Returns purchased item and message, or null item if failed.
+        (IItem? item, string message) Sell(int selection, Player player);
         
-        void BuyFromPlayer(IItem item, Player player);
-
-        /// <summary>
-        /// All items available for purchase
-        /// </summary>
+        // Returns confirmation message.
+        string BuyFromPlayer(IItem item, Player player);
+        
         List<(IItem item, int price)> GetStock();
     }
 }

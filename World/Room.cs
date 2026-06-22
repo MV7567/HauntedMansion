@@ -21,6 +21,7 @@ namespace HauntedMansion.World
         private readonly List<IInteractable> _interactables = new();
 
         private bool _isCleared;
+        private bool _hasBeenVisited;
         private readonly Random _rng = new();
 
         public Room(string roomId, List<NormalEnemy> normalEnemies,
@@ -54,17 +55,31 @@ namespace HauntedMansion.World
         /// <summary>
         /// Called by Map.MoveToRoom() every time player enters
         /// </summary>
-        public void OnEnter(Player player)
+        public string OnEnter(Player player)
         {
-            // display room description form json
             string description = _loader.GetRoomDescription(_roomId);
-            Console.WriteLine($"\n--- {_roomId.ToUpper()} ---");
-            Console.WriteLine(description);
-            
-            // trigger boss if not yet encountered
-            _bossEnemy?.TriggerBattle(player);
 
+            if (!_hasBeenVisited)
+            {
+                OnFirstEnter(player);
+                _hasBeenVisited = true;
+            }
+
+            OnEveryEnter(player);
             UpdateClearedStatus();
+
+            return description;
+        }
+        
+        private void OnFirstEnter(Player player)
+        {
+            // boss-trigger, cutscene, special description
+            _bossEnemy?.TriggerBattle(player);
+        }
+
+        private void OnEveryEnter(Player player)
+        {
+            // future: random flavour text, ambient events
         }
 
         /// <summary>

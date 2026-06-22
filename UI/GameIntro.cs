@@ -20,6 +20,9 @@ namespace HauntedMansion.UI
 
         public (Player player, string startRoomId) ShowMainMenu(IContentLoader loader)
         {
+            // CLEAR SCREEN: Clean console before showing the main title
+            _renderer.ClearScreen();
+            
             _renderer.RenderMessage("================================");
             _renderer.RenderMessage("       HAUNTED MANSION          ");
             _renderer.RenderMessage("================================");
@@ -70,6 +73,9 @@ namespace HauntedMansion.UI
                 statsData.Speed, statsData.Accuracy, statsData.MaxHP);
             
             var player = new Player(name, baseStats);
+            
+
+            _renderer.ClearScreen();
             
             _renderer.RenderMessage($"\nYou open your eyes, {name}.");
             _renderer.RenderMessage("The air smells of dust and decay.");

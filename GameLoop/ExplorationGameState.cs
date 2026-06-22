@@ -117,7 +117,7 @@ namespace HauntedMansion.GameLoop
             {
                 var result = interactable.Interact(_manager.Player);
                 _manager.Renderer.RenderInteractionResult(result);
-                if (!string.IsNullOrEmpty(result)) _manager.WaitToContinue(); // ZMIANA
+                if (!string.IsNullOrEmpty(result)) _manager.WaitToContinue();
             }
         }
 
@@ -125,6 +125,8 @@ namespace HauntedMansion.GameLoop
         {
             while (true)
             {
+                _manager.Renderer.ClearScreen();
+                
                 _manager.Renderer.RenderInventory(_manager.Player);
                 var options = new List<string> { "Equip/Unequip item", "Use consumable", "Back" };
                 _manager.Renderer.RenderMenu("Inventory options:", options);
@@ -138,6 +140,8 @@ namespace HauntedMansion.GameLoop
 
         private void HandleEquip()
         {
+            _manager.Renderer.ClearScreen();
+            
             _manager.Renderer.RenderEquipScreen(_manager.Player);
             var equippables = _manager.Player.PlayerInventory.GetEquippables();
             if (equippables.Count == 0)
@@ -170,6 +174,8 @@ namespace HauntedMansion.GameLoop
 
         private void HandleUseConsumable()
         {
+            _manager.Renderer.ClearScreen();
+            
             var consumables = _manager.Player.PlayerInventory.GetConsumables();
             if (consumables.Count == 0)
             {
@@ -224,11 +230,14 @@ namespace HauntedMansion.GameLoop
 
         private void HandleShop(ShopkeeperNPC shopkeeper)
         {
-            _manager.Renderer.RenderMessage($"{shopkeeper.Name}: Welcome! What are you buying?");
+            // Retrieve the shop instance from the NPC
             var shop = shopkeeper.GetShop();
 
             while (true)
             {
+                _manager.Renderer.ClearScreen();
+                _manager.Renderer.RenderMessage($"{shopkeeper.Name}: Welcome! What are you buying?");
+                
                 var stock = shop.GetStock();
                 _manager.Renderer.RenderShop(stock, _manager.Player);
                 
@@ -251,6 +260,8 @@ namespace HauntedMansion.GameLoop
 
         private void HandleSellToShop(Shop.IShop shop)
         {
+            _manager.Renderer.ClearScreen();
+            
             var sellable = _manager.Player.PlayerInventory.GetConsumables().Cast<Inventory.Interfaces.IItem>()
                 .Concat(_manager.Player.PlayerInventory.GetEquippables()).ToList();
             

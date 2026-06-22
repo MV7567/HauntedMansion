@@ -24,6 +24,7 @@ namespace HauntedMansion.GameLoop
 
         public void OnEnter()
         {
+            _manager.Renderer.ClearScreen();
             _manager.Renderer.RenderMessage("Combat begins!");
             _manager.WaitToContinue();
         }

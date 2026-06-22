@@ -1,16 +1,11 @@
 ﻿using System.Text.Json;
-using System.Linq;
 using HauntedMansion.Entities;
 using HauntedMansion.World;
-using System.Collections.Generic;
-using System.IO;
 using HauntedMansion.Inventory.Interfaces;
+using HauntedMansion.Data;
 
 namespace HauntedMansion.UI
 {
-    /// <summary>
-    /// saves layer stats and map room cleared states to file
-    /// </summary>
     public class SaveManager
     {
         private const string SavePath = "save.json";
@@ -49,17 +44,45 @@ namespace HauntedMansion.UI
 
         public (SaveData? data, string message) LoadGame()
         {
-            if (!File.Exists(SavePath))
-                return (null, "No save file found.");
+            if (!File.Exists(SavePath)) return (null, "No save file found.");
 
             var json = File.ReadAllText(SavePath);
             var data = JsonSerializer.Deserialize<SaveData>(json);
-            return data == null
-                ? (null, "Failed to load save file.")
-                : (data, "Game loaded.");
+            return data == null ? (null, "Failed to load save file.") : (data, "Game loaded.");
         }
         
         public bool HasSaveFile() => File.Exists(SavePath);
+        
+        public string ApplySaveData(Player player, Map map, IContentLoader loader, SaveData data)
+        {
+            player.TakeDamage(player.CurrentHP - data.CurrentHP);
+            player.AddMoney(data.Money - player.Money);
+            player.GainExperience(data.Experience - player.Experience);
+            
+            if (data.ClearedRooms != null)
+                foreach (var id in data.ClearedRooms) (map.GetRoom(id) as Room)?.ForceClearEnemies();
+                
+            if (data.LootedRooms != null)
+                foreach (var id in data.LootedRooms) (map.GetRoom(id) as Room)?.ForceLootAll();
+
+            var itemFactory = new ItemFactory(loader);
+            
+            if (data.InventoryIds != null)
+                foreach (var itemId in data.InventoryIds)
+                {
+                    var item = itemFactory.CreateItem(itemId);
+                    if (item != null) player.PlayerInventory.AddItem(item);
+                }
+
+            if (data.EquippedIds != null)
+                foreach (var kvp in data.EquippedIds)
+                {
+                    var item = itemFactory.CreateItem(kvp.Value) as IEquippable;
+                    if (item != null) player.Equipment.Equip(item, player);
+                }
+
+            return data.CurrentRoomId ?? "entrance_hall";
+        }
 
         public class SaveData
         {

@@ -4,30 +4,23 @@ using HauntedMansion.Core;
 
 namespace HauntedMansion.UI
 {
-    /// <summary>
-    /// Handles all pre-game UI: title screen, name entry, intro text.
-    /// Keeps Program.cs clean and all player interaction in UI layer.
-    /// </summary>
     public class GameIntro
     {
         private readonly IRenderer _renderer;
+        private readonly IInputProvider _input;
         private readonly SaveManager _saveManager = new();
         
-        public GameIntro(IRenderer renderer)
+        public GameIntro(IRenderer renderer, IInputProvider input)
         {
             _renderer = renderer;
+            _input = input;
         }
 
-        /// <summary>
-        /// Shows main menu. Returns (player, startRoomId) to Program.cs.
-        /// Handles both new game and load game paths.
-        /// </summary>
         public (Player player, string startRoomId) ShowMainMenu(IContentLoader loader)
         {
             _renderer.RenderMessage("================================");
             _renderer.RenderMessage("       HAUNTED MANSION          ");
             _renderer.RenderMessage("================================");
-            //_renderer.RenderMessage("\nEnter your name: ");
 
             var options = new List<string> { "New Game" };
             if (_saveManager.HasSaveFile())
@@ -36,15 +29,14 @@ namespace HauntedMansion.UI
 
             _renderer.RenderMenu("", options);
 
-            if (!int.TryParse(Console.ReadLine(), out int choice))
-                choice = 1;
+            int choice = _input.GetIntInput(1, options.Count);
             
             // Quit
             if (choice == options.Count)
                 Environment.Exit(0);
             
             // Load Game
-            if (choice == 2 && _saveManager.HasSaveFile())
+            if (options.Count == 3 && choice == 2 && _saveManager.HasSaveFile())
             {
                 var (saveData, msg) = _saveManager.LoadGame();
                 _renderer.RenderMessage(msg);
@@ -56,14 +48,10 @@ namespace HauntedMansion.UI
                         statsData.Attack, statsData.Defence, statsData.Magic,
                         statsData.Speed, statsData.Accuracy, statsData.MaxHP);
                     
-                    var player = new Player(
-                        saveData.PlayerName ?? "Stranger", baseStats);
+                    var player = new Player(saveData.PlayerName ?? "Stranger", baseStats);
                     
-                    // Restore player state
-                    if (saveData.Money > 0)
-                        player.AddMoney(saveData.Money);
-                    if (saveData.Experience > 0)
-                        player.GainExperience(saveData.Experience);
+                    if (saveData.Money > 0) player.AddMoney(saveData.Money);
+                    if (saveData.Experience > 0) player.GainExperience(saveData.Experience);
 
                     return (player, saveData.CurrentRoomId ?? "entrance_hall");
                 }
@@ -76,8 +64,7 @@ namespace HauntedMansion.UI
         private Player CreateNewPlayer(IContentLoader loader)
         {
             _renderer.RenderMessage("\nEnter your name: ");
-            var name = Console.ReadLine()?.Trim() is { Length: > 0 } n
-                ? n : "Stranger";
+            var name = Console.ReadLine()?.Trim() is { Length: > 0 } n ? n : "Stranger";
             
             var statsData = loader.GetPlayerDefaultStats();
             var baseStats = new CharacterStats(
@@ -87,32 +74,12 @@ namespace HauntedMansion.UI
             var player = new Player(name, baseStats);
             
             _renderer.RenderMessage($"\nYou open your eyes, {name}.");
-            _renderer.RenderMessage(
-                "The air smells of dust and decay.");
-            _renderer.RenderMessage(
-                "You are in a mansion. You don't know how you got here.");
+            _renderer.RenderMessage("The air smells of dust and decay.");
+            _renderer.RenderMessage("You are in a mansion. You don't know how you got here.");
             _renderer.RenderMessage("\nPress Enter to continue...");
-            Console.ReadLine();
+            _input.WaitForContinue();
 
             return player;
-        }
-        
-        // Keep for backwards compatibility
-        public string GetPlayerName()
-        {
-            _renderer.RenderMessage("\nEnter your name: ");
-            return Console.ReadLine()?.Trim() is { Length: > 0 } n
-                ? n : "Stranger";
-        }
-        
-        public void RenderIntro(string playerName)
-        {
-            _renderer.RenderMessage($"\nYou open your eyes, {playerName}.");
-            _renderer.RenderMessage("The air smells of dust and decay.");
-            _renderer.RenderMessage(
-                "You are in a mansion. You don't know how you got here.");
-            _renderer.RenderMessage("\nPress Enter to continue...");
-            Console.ReadLine();
         }
     }
 }

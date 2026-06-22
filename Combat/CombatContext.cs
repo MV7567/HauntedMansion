@@ -19,4 +19,5 @@ namespace HauntedMansion.Combat
             TurnNumber = 1;
         }
     }
+    
 }

@@ -1,29 +1,30 @@
 ﻿using HauntedMansion.Combat;
-using HauntedMansion.Combat.Interfaces;
 using HauntedMansion.Entities;
 
 namespace HauntedMansion.Dialogue.Actions
 {
     /// <summary>
-    /// Changes enemy combat state when dialogue choice is selected.
-    /// e.g. wrong answer -> AggressiveState, correct -> SparableState.
+    /// sets IsSparable flag
     /// </summary>
     public class SetStateDialogueAction : IDialogueAction
     {
         private readonly Enemy _enemy;
-        private readonly ICombatState _newState;
+        private readonly string _targetStateName;
         private readonly string _message;
         
-        public SetStateDialogueAction(Enemy enemy, ICombatState newState, string message = "")
+        public SetStateDialogueAction(Enemy enemy, string targetStateName, string message = "")
         {
             _enemy = enemy;
-            _newState = newState;
+            _targetStateName = targetStateName;
             _message = message;
         }
         
         public string Execute(CombatContext? context)
         {
-            _enemy.SetState(_newState);
+            if (_targetStateName.Contains("Sparable", StringComparison.OrdinalIgnoreCase))
+            {
+                _enemy.IsSparable = true;
+            }
             return _message;
         }
     }

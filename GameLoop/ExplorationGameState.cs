@@ -2,7 +2,6 @@
 using HauntedMansion.Dialogue;
 using HauntedMansion.Entities;
 using HauntedMansion.Interactions;
-using HauntedMansion.UI;
 using HauntedMansion.World;
 
 namespace HauntedMansion.GameLoop
@@ -79,6 +78,20 @@ namespace HauntedMansion.GameLoop
 
         private void HandleMovement(IRoom target)
         {
+            // check key and win condition
+            if (target.GetRoomID() == "basement_stairs" && !_manager.Map.IsPassable("entrance_hall", "basement_stairs"))
+            {
+                var oldKey = _manager.Player.PlayerInventory.GetKeyItem().FirstOrDefault(k => k.KeyID == "old_key");
+                
+                if (oldKey != null)
+                {
+                    _manager.Map.UnlockPassage("entrance_hall", "basement_stairs");
+                    _manager.ChangeState(new GameWonState(_manager));
+                    return;
+                }
+            }
+
+            // normal movement
             var (success, msg) = _manager.Map.MoveToRoom(target.GetRoomID(), _manager.Player);
             if (!success)
             {
@@ -230,7 +243,7 @@ namespace HauntedMansion.GameLoop
 
         private void HandleShop(ShopkeeperNPC shopkeeper)
         {
-            // Retrieve the shop instance from the NPC
+            // Retrieve the shop instance from the NP2
             var shop = shopkeeper.GetShop();
 
             while (true)

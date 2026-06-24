@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using HauntedMansion.Core;
+﻿using HauntedMansion.Core;
 using HauntedMansion.Combat;
 using HauntedMansion.Combat.Interfaces;
 
@@ -11,9 +9,8 @@ public abstract class Enemy : Entity
     private List<BodyPart> BodyParts { get; init; }
     private IEnemyAi AI { get; init; }
     
-    public bool IsSparable { get; set; } // Odtąd manipuluje tym dialog lub akcja AI
-
-    // Zostawiamy modyfikatory, jeśli AI/Efekty ich nadal potrzebują
+    public bool IsSparable { get; set; } 
+    
     public int StateAttackMod { get; private set; }
     public int StateDefenceMod { get; private set; }
     public int StateSpeedMod { get; private set; }

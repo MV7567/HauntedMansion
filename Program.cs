@@ -10,6 +10,8 @@ loader.LoadAll("content");
 // Build map from JSON
 var roomFactory = new RoomFactory(loader);
 var map = roomFactory.BuildMap("entrance_hall");
+// lock door
+map.LockPassage("entrance_hall", "basement_stairs", Map.PassageBlockReason.RequiresItem, "The heavy door to the basement is locked. It has an old, rusty keyhole.");
 
 // UI & Input 
 var renderer = new TextRenderer();

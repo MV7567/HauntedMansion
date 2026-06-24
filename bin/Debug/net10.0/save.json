@@ -1,21 +1,24 @@
 {
   "PlayerName": "k",
-  "CurrentHP": 100,
+  "CurrentHP": 81,
   "Experience": 0,
-  "Money": 25,
-  "CurrentRoomId": "study",
+  "Money": 30,
+  "CurrentRoomId": "child_bedroom",
   "ClearedRooms": [
     "entrance_hall",
+    "child_bedroom",
+    "library",
     "study",
     "basement_stairs"
   ],
   "LootedRooms": [
     "library",
-    "study"
+    "study",
+    "pantry"
   ],
   "InventoryIds": [
     "healing_potion",
-    "key:teddy_bear"
+    "healing_potion"
   ],
   "EquippedIds": {
     "Weapon": "equipment:rusty_sword",

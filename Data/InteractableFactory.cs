@@ -7,6 +7,8 @@ namespace HauntedMansion.Data
     /// <summary>
     /// Creates IInteractable instances from JSON data.
     /// Separated from RoomFactory
+    /// different objects (Lootables, Traps, NPCs, Shops) 
+    /// behind a single interface
     /// </summary>
     public class InteractableFactory
     {
@@ -34,6 +36,7 @@ namespace HauntedMansion.Data
 
         private IInteractable? CreateFromData(JsonContentLoader.InteractableData data)
         {
+            // specific subclasses based on the JSON Type field
             return data.Type switch
             {
                 "lootable" => CreateLootable(data),
@@ -46,6 +49,7 @@ namespace HauntedMansion.Data
 
         private LootableObject CreateLootable(JsonContentLoader.InteractableData data)
         {
+            // Delegates the creation of items to the ItemFactory
             var items = data.Items
                 .Select(id => _itemFactory.CreateItem(id))
                 .Where(i => i != null)

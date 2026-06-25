@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using HauntedMansion.Entities;
+﻿using HauntedMansion.Entities;
 
 namespace HauntedMansion.World
 {
+    // record struct used as a key for locked passages
     public record struct Edge(string From, string To);
 
+    /// <summary>
+    /// Manages the layout of the rooms
+    /// The Map represents the mansion as a graph. Rooms are nodes and connections are edges
+    /// _lockedPassages dictionary uses Edge (From, To) as a composite key to manage locked doors
+    /// </summary>
     public class Map
     {
         public enum PassageBlockReason { None, Locked, Blocked, RequiresItem }
@@ -74,6 +78,8 @@ namespace HauntedMansion.World
         public (bool success, string message) MoveToRoom(string roomId, Player player)
         {
             string currentId = _currentRoom?.GetRoomID();
+            
+            // check against the graphs locked edges
             if (currentId != null && !IsPassable(currentId, roomId))
                 return (false, GetBlockedMessage(currentId, roomId));
 

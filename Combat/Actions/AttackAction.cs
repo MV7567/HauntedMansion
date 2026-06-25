@@ -5,6 +5,7 @@ namespace HauntedMansion.Combat.Actions
 {
     /// <summary>
     /// Basic physical attack
+    /// the attacker, the engine that performs the math, the attack type
     /// </summary>
     public class AttackAction : IAction
     {
@@ -12,6 +13,7 @@ namespace HauntedMansion.Combat.Actions
         private readonly CombatEngine _engine;
         private readonly AttackType _type;
 
+        // Dependencies so the action has everything to resolve
         public AttackAction(Enemy attacker, CombatEngine engine,
             AttackType type = AttackType.Physical)
         {
@@ -20,6 +22,7 @@ namespace HauntedMansion.Combat.Actions
             _type = type;
         }
 
+        // delegates the actual math to CombatEngine
         public CombatResult? Execute(CombatContext? context)
         {
             if (context == null) return null;

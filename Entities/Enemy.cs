@@ -6,9 +6,13 @@ namespace HauntedMansion.Entities;
 
 public abstract class Enemy : Entity
 {
+    /// <summary>
+    /// Abstract base for enemies.
+    /// </summary>
     private List<BodyPart> BodyParts { get; init; }
     private IEnemyAi AI { get; init; }
     
+    // flag flipped by dialogue
     public bool IsSparable { get; set; } 
     
     public int StateAttackMod { get; private set; }
@@ -24,6 +28,7 @@ public abstract class Enemy : Entity
         AI = ai;
     }
 
+    // Used to apply debuffs (e.g., when a body part is destroyed)
     public void ApplyStateMod(int attack = 0, int defence = 0, int speed = 0, int magic = 0, int accuracy = 0)
     {
         StateAttackMod += attack;
@@ -38,6 +43,7 @@ public abstract class Enemy : Entity
         StateAttackMod = StateDefenceMod = StateSpeedMod = StateMagicMod = StateAccuracyMod = 0;
     }
     
+    // Merges base stats with temporary debuffs/buffs
     public override CharacterStats GetEffectiveStats()
     {
         return new CharacterStats(

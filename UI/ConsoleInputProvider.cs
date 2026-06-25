@@ -1,5 +1,6 @@
 ﻿namespace HauntedMansion.UI
 {
+    // implementation of input for the console
     public class ConsoleInputProvider : IInputProvider
     {
         public int GetIntInput(int min, int max)

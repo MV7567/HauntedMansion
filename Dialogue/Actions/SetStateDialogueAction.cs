@@ -8,6 +8,9 @@ namespace HauntedMansion.Dialogue.Actions
     /// </summary>
     public class SetStateDialogueAction : IDialogueAction
     {
+        /// <summary>
+        /// Command that sets the IsSparable flag on an enemy.
+        /// </summary>
         private readonly Enemy _enemy;
         private readonly string _targetStateName;
         private readonly string _message;

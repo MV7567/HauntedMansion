@@ -6,6 +6,11 @@ using HauntedMansion.UI;
 
 namespace HauntedMansion.GameLoop
 {
+    /// <summary>
+    /// Update() = full turn (player moves, then enemies move).
+    /// LINQ (e.g., `.Where(e => e.IsAlive())`) to filter out 
+    /// dead enemies from the turn queue without for-loops.
+    /// </summary>
     public class CombatGameState : IGameState
     {
         private readonly GameManager _manager;
@@ -36,6 +41,7 @@ namespace HauntedMansion.GameLoop
             _manager.Renderer.ClearScreen();
             _manager.Renderer.RenderCombat(_context);
             
+            // win condition check
             if (_context.Enemies.All(e => !e.IsAlive()))
             {
                 _manager.Renderer.RenderMessage("All enemies defeated!");
@@ -44,6 +50,7 @@ namespace HauntedMansion.GameLoop
                 return;
             }
             
+            // Lose condition check
             if (!_manager.Player.IsAlive())
             {
                 _manager.Renderer.RenderMessage("You died!");
@@ -52,9 +59,11 @@ namespace HauntedMansion.GameLoop
                 return;
             }
             
+            // Player's turn loop (keeps asking until a valid action is taken)
             bool validAction = false;
             while (!validAction) validAction = HandlePlayerTurn();
             
+            // Enemies turn
             foreach (var enemy in _context.Enemies.Where(e => e.IsAlive())) HandleEnemyTurn(enemy);
 
             _context.TurnNumber++;
@@ -93,6 +102,7 @@ namespace HauntedMansion.GameLoop
             if (eChoice == enemyOptions.Count) return false;
 
             var target = enemies[eChoice - 1];
+            // LINQ projection to format available body parts
             var availableParts = Enum.GetValues(typeof(BodyPartType))
                 .Cast<BodyPartType>()
                 .Select(p => new { Type = p, Part = target.GetBodyPart(p) })
@@ -165,6 +175,7 @@ namespace HauntedMansion.GameLoop
 
         private bool HandleSpare(List<Enemy> enemies)
         {
+            // Only allows sparing if the IsSparable flag was set
             var sparable = enemies.Where(e => e.IsAlive()).FirstOrDefault(e => e.IsSparable);
 
             if (sparable == null)
@@ -173,6 +184,7 @@ namespace HauntedMansion.GameLoop
                 return false;
             }
 
+            // Bosses become NPCs, normal enemies just vanish
             if (sparable is NormalEnemy normal) normal.MarkDefeated();
             else if (sparable is BossEnemy boss) boss.BecomeNPC();
 

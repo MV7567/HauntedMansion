@@ -4,6 +4,11 @@ using HauntedMansion.World;
 
 namespace HauntedMansion.GameLoop
 {
+    /// <summary>
+    /// context of the state pattern
+    /// _nextState logic doesnt change states immediately,
+    /// safely swap it at the top of the while(_isRunning) loop
+    /// </summary>
     public class GameManager
     {
         public Player Player { get; }
@@ -28,6 +33,7 @@ namespace HauntedMansion.GameLoop
             _nextState = newState;
         }
         
+        // pause logic
         public void WaitToContinue()
         {
             Renderer.RenderContinuePrompt();
@@ -39,6 +45,7 @@ namespace HauntedMansion.GameLoop
             _isRunning = true;
             _nextState = startingState;
 
+            // game loop
             while (_isRunning)
             {
                 if (_nextState != null)

@@ -5,6 +5,11 @@ using HauntedMansion.Entities;
 
 namespace HauntedMansion.Dialogue
 {
+    /// <summary>
+    /// Controls the flow of conversation
+    /// It keeps track of the CurrentNode and moves to the NextNode based on user input.
+    /// It also evaluates conditions (like checking the player's inventory) before generating choices.
+    /// </summary>
     public class DialogueEngine(IContentLoader loader)
     {
         private DialogueNode? _currentNode;
@@ -13,6 +18,7 @@ namespace HauntedMansion.Dialogue
         public bool IsActive { get; private set; }
         public DialogueNode? CurrentNode => _currentNode;
         
+        // Initializes the conversation graph
         public void StartConversation(IDialoguable entity, Player player)
         {
             // Base key and current node
@@ -31,6 +37,7 @@ namespace HauntedMansion.Dialogue
             IsActive = _currentNode != null;
         }
 
+        // Processes the player's choice, executes any attached Commands, and moves to the next Node
         public string SelectChoice(int choiceIndex, Player player, CombatContext? context = null)
         {
             if (!IsActive || _currentNode == null) return string.Empty;
@@ -62,6 +69,7 @@ namespace HauntedMansion.Dialogue
             _currentTree = null;
         }
 
+        // Builds the tree from JSON data
         private DialogueTree? LoadTree(string entityId, Enemy? enemyRef, Player player)
         {
             if (string.IsNullOrEmpty(entityId)) return null;
@@ -90,7 +98,7 @@ namespace HauntedMansion.Dialogue
                             IDialogueAction? action = null;
                             if (!string.IsNullOrEmpty(cData.ActionType) && enemyRef != null)
                             {
-                                // Target state flag from JSON
+                                // Map strings from JSON to actual Command Objects
                                 string targetState = cData.State ?? "";
 
                                 if (cData.ActionType == "ItemAndState" && !string.IsNullOrEmpty(cData.RequiredItem))

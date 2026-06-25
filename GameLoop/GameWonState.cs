@@ -2,6 +2,9 @@
 {
     public class GameWonState : IGameState
     {
+        /// <summary>
+        /// win condition
+        /// </summary>
         private readonly GameManager _manager;
         
         public GameWonState(GameManager manager)
@@ -24,7 +27,7 @@
             _manager.Renderer.RenderMessage("\nThank you for playing.");
             
             _manager.WaitToContinue();
-            _manager.Quit();
+            _manager.Quit();    // shuts down the GameManager loop
         }
 
     }

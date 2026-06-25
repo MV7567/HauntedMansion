@@ -29,6 +29,8 @@ public class NormalEnemy : Enemy, IDialoguable
     {
         IsDefeated = true;
     }
+    
+    // IDialoguable implementation for basic enemy taunts
     public string GetStartingNode() => StartingNodeID;
     public string GetBaseTreeId() => StartingNodeID;
 }

@@ -24,6 +24,7 @@ namespace HauntedMansion.Inventory.Items
 
         public bool Use(Player player)
         {
+            // Delegate the logic to the Effect strategy
             Effect.Apply(player);
             return true;        // consumed - remove from inventory
         }

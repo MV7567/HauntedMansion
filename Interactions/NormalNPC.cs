@@ -7,6 +7,9 @@ namespace HauntedMansion.Interactions
     /// Frienly NPC with dialogue tree via IDialoguable
     /// no combat behavior
     /// Interact() starts the converasation (Dialogue engine)
+    /// It returns an empty string on Interact() 
+    /// because the ExplorationGameState recognizes it as IDialoguable and shifts context 
+    /// to the DialogueEngine automatically.
     /// </summary>
     public class NormalNPC : IInteractable, IDialoguable
     {

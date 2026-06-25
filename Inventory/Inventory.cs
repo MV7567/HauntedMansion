@@ -54,6 +54,8 @@ namespace HauntedMansion.Inventory
                     break;
             }
         }
+        
+        // Expose specific lists for the UI Renderer to display
         public List<Consumable> GetConsumables() => _consumables;
         public List<KeyItem> GetKeyItem() => _keyItems;
         public List<IEquippable> GetEquippables() => _equippables;

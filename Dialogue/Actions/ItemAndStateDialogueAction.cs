@@ -10,12 +10,13 @@ namespace HauntedMansion.Dialogue.Actions
     {
         public string Execute(CombatContext? context)
         {
-            // If the action requires transitioning to "Sparable", set the flag
+            // If the action requires transitioning to Sparable, set the flag
             if (targetStateName.Contains("Sparable", StringComparison.OrdinalIgnoreCase))
             {
                 enemy.IsSparable = true;
             }
             
+            // Search the player's inventory for the specific quest item and consume it
             var item = player.PlayerInventory.GetKeyItem().FirstOrDefault(k => k.KeyID == keyId);
             if (item != null)
             {

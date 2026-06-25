@@ -8,6 +8,7 @@ namespace HauntedMansion.Combat
     /// </summary>
     public class CombatContext
     {
+        // player, enemies and how many turns
         public Player Player { get; set; }
         public List<Enemy> Enemies { get; set; } = new();
         public int TurnNumber { get; set; }

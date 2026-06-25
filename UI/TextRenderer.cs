@@ -2,7 +2,6 @@
 using HauntedMansion.Dialogue;
 using HauntedMansion.Entities;
 using HauntedMansion.Inventory.Interfaces;
-using HauntedMansion.Shop;
 using HauntedMansion.World;
 
 namespace HauntedMansion.UI

@@ -24,6 +24,7 @@ namespace HauntedMansion.Interactions
             if (_isTriggered)
                 return "The trap has already been triggered.";
             
+            // Direct damage to the player
             player.TakeDamage(_damageAmount);
             _isTriggered = true;
 

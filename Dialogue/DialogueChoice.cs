@@ -13,7 +13,7 @@ namespace HauntedMansion.Dialogue
         /// <summary>
         /// Optional action executed when this choice is selected.
         /// e.g. SetStateDialogueAction, GrantItemDialogueAction.
-        /// Null means no game effect.
+        /// Null means no game effect
         /// </summary>
         public IDialogueAction? Action { get; init; }
     }

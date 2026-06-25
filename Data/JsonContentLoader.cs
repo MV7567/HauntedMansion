@@ -4,6 +4,7 @@ namespace HauntedMansion.Data
 {
     /// <summary>
     /// Loads all JSON content files at startup
+    /// puts them in dictionaries
     /// </summary>
     public class JsonContentLoader : IContentLoader
     {
@@ -98,6 +99,9 @@ namespace HauntedMansion.Data
             _interactableData = JsonSerializer.Deserialize
                 <Dictionary<string, List<InteractableData>>>(json, _jsonOptions) ?? new();
         }
+        
+        
+        // Getters 
 
         public string GetRoomDescription(string roomId) =>
             _roomDescriptions.TryGetValue(roomId, out var desc)

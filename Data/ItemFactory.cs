@@ -19,6 +19,7 @@ namespace HauntedMansion.Data
 
         public IItem? CreateItem(string itemId)
         {
+            // find the actual ID
             var rawId = itemId;
             if (itemId.StartsWith("consumable:")) rawId = itemId["consumable:".Length..];
             else if (itemId.StartsWith("equipment:")) rawId = itemId["equipment:".Length..];

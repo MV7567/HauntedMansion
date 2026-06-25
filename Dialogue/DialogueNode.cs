@@ -9,8 +9,11 @@
     {
         public string NodeID { get; init; }
         public string Text { get; init; }
+        
+        // outgoing options
         public List<DialogueChoice> Choices { get; init; } = new();
 
+        // convo ends
         public bool IsTerminal => Choices.Count == 0;
     }
 }

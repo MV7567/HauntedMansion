@@ -7,6 +7,7 @@
     /// </summary>
     public class CharacterStats
     {
+        // only set during construction
         public int Attack { get; init; }
         public int Defence { get; init; }
         public int Magic { get; init; }

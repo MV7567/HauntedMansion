@@ -42,12 +42,13 @@ namespace HauntedMansion.Entities
             // Removes combat capabilities and leaves only IInteractable/IDialoguable features
         }
 
+        // IDialoguable implementation changes based on whether the battle is over
         public string GetStartingNode() => PostBattleNPC ? PostBattleNodeID : StartingNodeID;
         public string GetBaseTreeId() => BaseTreeID;
         
         public string Interact(Player player)
         {
-            return string.Empty; // Sygnał dla ExplorationGameState, by otworzyć dialog
+            return string.Empty;
         }
         
         public string GetDescription() => $"{Name} stands here peacefully.";

@@ -6,6 +6,7 @@ namespace HauntedMansion.Interactions
     /// <summary>
     /// NPC separate from Shop
     /// Interact() opens the shop interface
+    /// reference to an IShop module
     /// </summary>
     public class ShopkeeperNPC : IInteractable
     {
@@ -28,6 +29,7 @@ namespace HauntedMansion.Interactions
         public string GetDescription() =>
             $"{Name} is here. Talk to them to open the shop.";
         
+        // Exposes the shop module for the GameState to handle
         public IShop GetShop() => _shopModule;
     }
 }

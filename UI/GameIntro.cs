@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace HauntedMansion.UI
 {
+    /// <summary>
+    /// Controls the initial flow of the game before the main Game Loop starts
+    /// </summary>
     public class GameIntro
     {
         private readonly IRenderer _renderer;
@@ -20,7 +23,6 @@ namespace HauntedMansion.UI
 
         public (Player player, string startRoomId) ShowMainMenu(IContentLoader loader)
         {
-            // CLEAR SCREEN: Clean console before showing the main title
             _renderer.ClearScreen();
             
             _renderer.RenderMessage("================================");

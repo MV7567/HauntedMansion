@@ -7,6 +7,11 @@ using HauntedMansion.World;
 
 namespace HauntedMansion.UI
 {
+    /// <summary>
+    /// for all visual output
+    /// If transitioning to graphics interface, just create a GraphicsRenderer 
+    /// implementing this interface, and the core game logic won't require modification
+    /// </summary>
     public interface IRenderer
     {
         void RenderRoom(IRoom room, Player player, string description);

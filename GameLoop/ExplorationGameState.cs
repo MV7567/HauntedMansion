@@ -6,6 +6,10 @@ using HauntedMansion.World;
 
 namespace HauntedMansion.GameLoop
 {
+    /// <summary>
+    /// State handling movement, inventory, and interactions.
+    /// dynamically builds the menu using options.Add() and actions.Add(delegate)
+    /// </summary>
     public class ExplorationGameState : IGameState
     {
         private readonly GameManager _manager;
@@ -35,7 +39,7 @@ namespace HauntedMansion.GameLoop
             var enemies = room.GetEnemies();
 
             var options = new List<string>();
-            var actions = new List<Action>();
+            var actions = new List<Action>();   // Stores the methods to call based on the player choice
 
             foreach (var neighbour in neighbours)
             {
@@ -73,7 +77,7 @@ namespace HauntedMansion.GameLoop
             _manager.Renderer.RenderMenu("What do you do?", options);
             
             int choice = _manager.Input.GetIntInput(1, options.Count);
-            actions[choice - 1].Invoke();
+            actions[choice - 1].Invoke();   // Executes the delegate associated with the chosen option
         }
 
         private void HandleMovement(IRoom target)
@@ -120,6 +124,7 @@ namespace HauntedMansion.GameLoop
             _manager.WaitToContinue();
         }
 
+        // interact regardles of object type
         private void HandleInteraction(IInteractable interactable)
         {
             if (interactable is IDialoguable dialoguable)

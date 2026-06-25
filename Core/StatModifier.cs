@@ -16,6 +16,7 @@
         // Default constructor, all bonuses start at 0
         public StatModifier() {}
 
+        // full constructor used by factories when reading item stats from hson
         public StatModifier(int attackBonus, int defenceBonus, int magicBonus,
                              int speedBonus, int accuracyBonus)
         {

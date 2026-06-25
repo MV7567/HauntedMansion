@@ -25,6 +25,7 @@ namespace HauntedMansion.Data
 
         /// <summary>
         /// create a fully configured room by ID
+        /// Adding a new room, linking it to the map, populating it with enemies
         /// </summary>
         public Room? CreateRoom(string roomId)
         {
@@ -74,6 +75,7 @@ namespace HauntedMansion.Data
 
                 foreach (var neighbourId in data.Connections)
                 {
+                    // key - both directions
                     string key = string.Compare(roomId, neighbourId) < 0
                         ? $"{roomId}:{neighbourId}"
                         : $"{neighbourId}:{roomId}";

@@ -12,6 +12,7 @@ namespace HauntedMansion.Inventory
     /// </summary>
     public class EquipmentSlots
     {
+        // Dictionary ensures only ONE item can be equipped per slot type
         private Dictionary<EquipmentSlot, IEquippable> _slots = new();
 
         /// <summary>

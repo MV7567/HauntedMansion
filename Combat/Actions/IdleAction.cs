@@ -9,11 +9,13 @@ namespace HauntedMansion.Combat.Actions
     {
         private readonly string _message;
         
+        // Constructor allows sets custom message on WHY the enemy is idle
         public IdleAction(string message = "The enemy does nothing.")
         {
             _message = message;
         }
         
+        // zero damage result
         public CombatResult? Execute(CombatContext? context)
         {
             return new CombatResult

@@ -6,6 +6,9 @@ using HauntedMansion.Data;
 
 namespace HauntedMansion.UI
 {
+    /// <summary>
+    /// serialization and deserialization of the game state
+    /// </summary>
     public class SaveManager
     {
         private const string SavePath = "save.json";

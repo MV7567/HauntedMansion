@@ -10,7 +10,7 @@ loader.LoadAll("content");
 // Build map from JSON
 var roomFactory = new RoomFactory(loader);
 var map = roomFactory.BuildMap("entrance_hall");
-// lock door
+// lock door (for win condition)
 map.LockPassage("entrance_hall", "basement_stairs", Map.PassageBlockReason.RequiresItem, "The heavy door to the basement is locked. It has an old, rusty keyhole.");
 
 // UI & Input 
@@ -39,7 +39,9 @@ if (startingRoom != null)
     input.WaitForContinue();
 }
 
-// Start game
+// Start game, pass everything to game manager
 var gameManager = new GameManager(player, map, renderer, input);
 var startingState = new ExplorationGameState(gameManager, loader);
+
+// start game looop
 gameManager.Run(startingState);

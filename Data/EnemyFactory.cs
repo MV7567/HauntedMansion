@@ -45,9 +45,11 @@ namespace HauntedMansion.Data
                 bp.HitMod,
                 bp.DmgMult
             )).ToList();
-            
+           
+            // strategy pattern
             var ai = new BasicEnemyAI();
             
+            // factory decides which subclass based on the json type
             return data.Type == "boss"
                 ? new BossEnemy(
                     data.Name, 
